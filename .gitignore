@@ -1,0 +1,29 @@
+# --- OS Dosyaları ---
+.DS_Store
+Thumbs.db
+
+# --- C++ / ESP32 (Gömülü) ---
+.pio/
+.vscode/
+*.bin
+*.elf
+
+# --- Java / Spring Boot (Arka Uç) ---
+target/
+*.class
+.idea/
+*.iml
+
+# --- Python / Yapay Zeka ---
+__pycache__/
+*.py[cod]
+venv/
+env/
+.env
+*.pkl
+
+# --- Node.js / React / Vue (Ön Yüz ve Mobil) ---
+node_modules/
+build/
+dist/
+.expo/
