@@ -14,13 +14,13 @@
 // ============================================================
 //  WiFi Configuration (Shared — used by wifi_communication.ino)
 // ============================================================
-#define WIFI_SSID       "YOUR_WIFI_SSID"
-#define WIFI_PASSWORD   "YOUR_WIFI_PASSWORD"
+#define WIFI_SSID       "realme 8"
+#define WIFI_PASSWORD   "gdkuesy6"
 
 // ============================================================
 //  Backend Server Configuration (Shared)
 // ============================================================
-#define BACKEND_HOST    "192.168.1.100"         // Backend server IP address
+#define BACKEND_HOST    "10.67.40.203"         // Backend server IP address
 #define BACKEND_PORT    8000                     // Backend server port
 #define ENDPOINT_DATA   "/api/sensor-data"       // POST: send all sensor data
 #define ENDPOINT_CMD    "/api/pump-command"       // GET:  receive pump commands
@@ -46,8 +46,8 @@
 // ============================================================
 // NOTE: The following values should be set by the moisture sensor
 //       team member after calibrating their sensor.
-#define MOISTURE_AIR_VALUE    3500    // ADC reading in air   = 0% moisture
-#define MOISTURE_WATER_VALUE  1500    // ADC reading in water = 100% moisture
+#define MOISTURE_AIR_VALUE    3200    // ADC reading in air   = 0% moisture
+#define MOISTURE_WATER_VALUE  1200    // ADC reading in water = 100% moisture
 
 // ============================================================
 //  Pump / Watering Thresholds
