@@ -1,46 +1,9 @@
 /*
  * smart_plant_system.ino
  * ======================
- * Main Sketch — Smart Plant Watering System
- * 
- * This is the entry point. It initializes all modules and runs
- * the main loop that coordinates sensor reading, data sending,
- * and command execution.
- * 
- * Architecture:
- *   ┌─────────────────────────────────────────────────┐
- *   │              smart_plant_system.ino              │
- *   │           (Main Sketch — this file)              │
- *   │                                                  │
- *   │  Calls setup/update functions from:              │
- *   │    ├── moisture_sensor.ino  (teammate's module)  │
- *   │    ├── relay_control.ino    (your module)        │
- *   │    ├── rain_sensor.ino      (teammate's module)  │
- *   │    └── wifi_communication.ino (shared module)    │
- *   └─────────────────────────────────────────────────┘
- *         ▲                           │
- *         │  GET /api/pump-command    │  POST /api/sensor-data
- *         │  (commands from LLM)      │  (all sensor values)
- *         │                           ▼
- *   ┌─────────────────────────────────────────────────┐
- *   │                 Backend Server                   │
- *   │         (API + LLM + Weather API)                │
- *   └─────────────────────────────────────────────────┘
- * 
- * Hardware (ESP32 DevKit V1):
- *   - Capacitive Moisture Sensor  → GPIO 32 (Analog)
- *   - Rain/Snow Sensor            → GPIO 25 (Digital)
- *   - 1-Channel Relay + Pump      → GPIO 26 (Digital)
- *   - Solar Panel (power)
- * 
- * Libraries Required:
- *   - ArduinoJson (v6.x) — Install via Arduino Library Manager
- *   - ESP32 Board Package — Provides WiFi.h, HTTPClient.h
- * 
- * Arduino IDE Setup:
- *   Board: "ESP32 Dev Module"
- *   Upload Speed: 115200
- *   All .ino files in this folder are compiled as one sketch.
+ * Main Sketch — Smart Plant Watering System (Final Modular Version)
+ * * Bu dosya sistemin giriş noktasıdır. Tüm modülleri (Nem, Yağmur, Röle, WiFi)
+ * koordine eder ve ana döngüyü yönetir.
  */
 
 #include "config.h"
@@ -54,22 +17,12 @@ unsigned long lastDataSend     = 0;
 unsigned long lastCommandCheck = 0;
 
 // ============================================================
-//  Rain Sensor State
-//  (Will be managed by teammate's rain_sensor.ino module.
-//   For now, read directly here. Replace with their functions
-//   once rain_sensor.ino is ready.)
+//  Global Sensor States
 // ============================================================
-bool isRaining    = false;
-int  rainRawValue = 0;
-
-// ============================================================
-//  Moisture Sensor State
-//  (Will be managed by teammate's moisture_sensor.ino module.
-//   For now, read directly here. Replace with their functions
-//   once moisture_sensor.ino is ready.)
-// ============================================================
+bool  isRaining      = false;
+int   rainRawValue   = 0;
 float moisturePercent = 0.0;
-int   moistureRaw    = 0;
+int   moistureRaw     = 0;
 
 // ============================================================
 //  SETUP
@@ -80,28 +33,25 @@ void setup() {
 
     Serial.println();
     Serial.println("╔══════════════════════════════════════════╗");
-    Serial.println("║    Smart Plant Watering System v1.0      ║");
+    Serial.println("║    Smart Plant Watering System v1.1      ║");
     Serial.println("║    ESP32 — Electronic Control Unit       ║");
     Serial.println("╚══════════════════════════════════════════╝");
     Serial.println();
 
-    // --- Rain Sensor (temporary — until teammate's module is ready) ---
-    pinMode(RAIN_SENSOR_PIN, INPUT);
-    Serial.println("[RAIN] Rain sensor initialized on GPIO " + String(RAIN_SENSOR_PIN));
+    // --- 1. Rain Sensor Module (Senin Modülün) ---
+    rainSensorSetup(); 
 
-    // --- Moisture Sensor ---
-    // Eski geçici blokları sildik, senin fonksiyonunu çağırdık
+    // --- 2. Moisture Sensor Module (Takım Arkadaşının Modülü) ---
     moistureSensorSetup(); 
-    Serial.println("[MOISTURE] Modül hazır.");
 
-    // --- Relay / Pump (your module) ---
-    relaySetup();               // from relay_control.ino
+    // --- 3. Relay / Pump Module (Yakup'un Modülü) ---
+    relaySetup();               
 
-    // --- WiFi Communication (shared module) ---
-    wifiSetup();                // from wifi_communication.ino
+    // --- 4. WiFi Communication Module (Ortak Modül) ---
+    wifiSetup();                
 
     Serial.println();
-    Serial.println("[SYSTEM] ✓ All modules initialized.");
+    Serial.println("[SYSTEM] ✓ Tüm modüller başarıyla bağlandı.");
     Serial.println("──────────────────────────────────────────");
 }
 
@@ -111,82 +61,71 @@ void setup() {
 void loop() {
     unsigned long now = millis();
 
-    // --- Always: Update pump state machine ---
-    relayUpdate();              // from relay_control.ino
+    // Pompa durum makinesini ve WiFi bağlantısını her döngüde kontrol et
+    relayUpdate();              
+    wifiMaintain();             
 
-    // --- Always: Maintain WiFi connection ---
-    wifiMaintain();             // from wifi_communication.ino
-
-    // --- Periodic: Read all sensors ---
+    // Periyodik: Sensörleri oku (Örn: 5 saniyede bir)
     if (now - lastSensorRead >= SENSOR_READ_INTERVAL_MS) {
         lastSensorRead = now;
         readAllSensors();
     }
 
-    // --- Periodic: Send data to backend ---
+    // Periyodik: Verileri backend'e gönder (Örn: 15 saniyede bir)
     if (now - lastDataSend >= DATA_SEND_INTERVAL_MS) {
         lastDataSend = now;
         sendDataToBackend();
     }
 
-    // --- Periodic: Check backend for commands ---
+    // Periyodik: Backend'den gelen komutları kontrol et (Örn: 10 saniyede bir)
     if (now - lastCommandCheck >= COMMAND_CHECK_INTERVAL_MS) {
         lastCommandCheck = now;
         checkAndExecuteCommand();
     }
 
-    delay(10);  // Prevent watchdog reset
+    delay(10);  // İşlemciyi rahatlatmak için kısa bekleme
 }
 
 // ============================================================
-//  Read All Sensors
+//  Read All Sensors (Modül Entegrasyon Noktası)
 // ============================================================
 void readAllSensors() {
-    // 1. Kendi modülündeki okuma ve hesaplama işlemini çalıştır
+    // --- 1. Moisture Sensor İşlemleri ---
     moistureSensorUpdate(); 
-    
-    // 2. Senin modülünde hesaplanan güncel değerleri çek
     moisturePercent = getMoisturePercentage();
     moistureRaw = getMoistureRaw();
 
-    // 3. Yakup'un röle modülüne bu veriyi gönder
+    // Nem verisini karar vermesi için Yakup'un röle modülüne aktar
     updateMoistureData(moisturePercent); 
 
-    // --- Rain Sensor (Geçici direkt okuma devam edebilir) ---
-    rainRawValue = digitalRead(RAIN_SENSOR_PIN);
-    isRaining = (rainRawValue == LOW);
+    // --- 2. Rain Sensor İşlemleri (Senin Yeni Modülün) ---
+    rainSensorUpdate();             // Fiziksel okumayı yap
+    isRaining = getIsRaining();     // Modülden mantıksal durumu al
+    rainRawValue = getRainRawValue(); // Modülden ham değeri al
 
     // --- Log Çıktısı ---
-    Serial.println("[SENSORS] Moisture: " + String(moisturePercent, 1)
-        + "% (raw: " + String(moistureRaw) + ")"
-        + " | Rain: " + String(isRaining ? "YES" : "NO")
-        + " | Pump: " + String(getPumpStateString()));
+    Serial.println("[SENSORS] Nem: %" + String(moisturePercent, 1)
+        + " (raw: " + String(moistureRaw) + ")"
+        + " | Yağmur: " + String(isRaining ? "EVET" : "HAYIR")
+        + " | Pompa: " + String(getPumpStateString()));
 }
 
 // ============================================================
-//  Send Data to Backend (via WiFi module)
+//  Send Data to Backend
 // ============================================================
 void sendDataToBackend() {
-    if (!isWifiConnected()) {
-        Serial.println("[SYSTEM] Skipping data send — WiFi disconnected.");
-        return;
-    }
+    if (!isWifiConnected()) return;
 
-    // Collect data from all sensor modules and send via WiFi
     bool success = sendAllSensorData(
-        moisturePercent,                 // moisture (temporary read)
-        moistureRaw,                     // moisture (temporary read)
-        isRaining,                       // rain sensor (temporary)
-        rainRawValue,                    // rain sensor (temporary)
-        getPumpStateString(),            // from relay_control.ino
-        getPumpRemainingTime()           // from relay_control.ino
+        moisturePercent,
+        moistureRaw,
+        isRaining,
+        rainRawValue,
+        getPumpStateString(),
+        getPumpRemainingTime()
     );
 
-    if (success) {
-        Serial.println("[SYSTEM] ✓ Data sent successfully.");
-    } else {
-        Serial.println("[SYSTEM] ✗ Data send failed.");
-    }
+    if (success) Serial.println("[SYSTEM] ✓ Veri başarıyla gönderildi.");
 }
 
 // ============================================================
@@ -195,28 +134,20 @@ void sendDataToBackend() {
 void checkAndExecuteCommand() {
     if (!isWifiConnected()) return;
 
-    // Get command from backend (via WiFi module)
-    BackendCommand cmd = checkBackendForCommand();  // from wifi_communication.ino
+    BackendCommand cmd = checkBackendForCommand();
 
     if (!cmd.hasCommand) return;
 
-    Serial.println("[SYSTEM] Executing: " + cmd.action + " | Reason: " + cmd.reason);
+    Serial.println("[SYSTEM] Komut Alındı: " + cmd.action + " | Neden: " + cmd.reason);
 
-    // --- Route command to relay_control.ino ---
     if (cmd.action == "start") {
-        if (cmd.duration > 0) {
-            startPump(cmd.duration);        // Specific duration from backend
-        } else {
-            startSmartWatering();           // Auto duration from moisture level
-        }
+        if (cmd.duration > 0) startPump(cmd.duration);
+        else startSmartWatering();
     }
     else if (cmd.action == "stop") {
         stopPump("backend_command");
     }
     else if (cmd.action == "heat_burst") {
         startHeatProtectionBurst();
-    }
-    else {
-        Serial.println("[SYSTEM] Unknown command: " + cmd.action);
     }
 }
