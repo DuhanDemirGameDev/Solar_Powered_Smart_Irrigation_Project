@@ -41,6 +41,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include "types.h"
 
 // ============================================================
 //  WiFi State
@@ -52,16 +53,6 @@ int    reconnectAttempts      = 0;
 #define RECONNECT_INTERVAL_MS    5000
 #define MAX_RECONNECT_ATTEMPTS   20
 #define HTTP_TIMEOUT_MS          5000
-
-// ============================================================
-//  Command Structure (received from backend)
-// ============================================================
-struct BackendCommand {
-    bool   hasCommand;      // true if a valid command was received
-    String action;          // "start", "stop", "heat_burst", "none"
-    int    duration;        // seconds (0 = use smart watering)
-    String reason;          // reason / LLM comment from backend
-};
 
 // ============================================================
 //  WiFi Setup — Connect to Network

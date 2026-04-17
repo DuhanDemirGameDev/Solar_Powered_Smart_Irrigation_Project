@@ -44,6 +44,7 @@
  */
 
 #include "config.h"
+#include "types.h"
 
 // ============================================================
 //  Timing Trackers
@@ -88,12 +89,10 @@ void setup() {
     pinMode(RAIN_SENSOR_PIN, INPUT);
     Serial.println("[RAIN] Rain sensor initialized on GPIO " + String(RAIN_SENSOR_PIN));
 
-    // --- Moisture Sensor (temporary — until teammate's module is ready) ---
-    // ► TEAM: Replace this block with moistureSensorSetup() when moisture_sensor.ino is ready
-    analogReadResolution(12);
-    analogSetAttenuation(ADC_11db);
-    pinMode(MOISTURE_SENSOR_PIN, INPUT);
-    Serial.println("[MOISTURE] Sensor initialized on GPIO " + String(MOISTURE_SENSOR_PIN) + " (temporary read)");
+    // --- Moisture Sensor ---
+    // Eski geçici blokları sildik, senin fonksiyonunu çağırdık
+    moistureSensorSetup(); 
+    Serial.println("[MOISTURE] Modül hazır.");
 
     // --- Relay / Pump (your module) ---
     relaySetup();               // from relay_control.ino
@@ -143,26 +142,21 @@ void loop() {
 //  Read All Sensors
 // ============================================================
 void readAllSensors() {
-    // --- Moisture Sensor (temporary direct read) ---
-    // ► TEAM: Replace this block with moistureSensorUpdate() + getMoisturePercentage()
-    //         when moisture_sensor.ino is ready.
-    moistureRaw = analogRead(MOISTURE_SENSOR_PIN);
-    moisturePercent = map(moistureRaw, MOISTURE_AIR_VALUE, MOISTURE_WATER_VALUE, 0, 100);
-    if (moisturePercent < 0.0)   moisturePercent = 0.0;
-    if (moisturePercent > 100.0) moisturePercent = 100.0;
+    // 1. Kendi modülündeki okuma ve hesaplama işlemini çalıştır
+    moistureSensorUpdate(); 
+    
+    // 2. Senin modülünde hesaplanan güncel değerleri çek
+    moisturePercent = getMoisturePercentage();
+    moistureRaw = getMoistureRaw();
 
-    // Feed moisture data to relay module so it can make watering decisions
-    updateMoistureData(moisturePercent);   // from relay_control.ino
+    // 3. Yakup'un röle modülüne bu veriyi gönder
+    updateMoistureData(moisturePercent); 
 
-    // --- Rain Sensor (temporary direct read) ---
-    // Most rain sensor modules: LOW = raining, HIGH = not raining
+    // --- Rain Sensor (Geçici direkt okuma devam edebilir) ---
     rainRawValue = digitalRead(RAIN_SENSOR_PIN);
     isRaining = (rainRawValue == LOW);
 
-    // ► TEAM: Add other sensor readings here
-    // Example: rainSensorUpdate();  // from rain_sensor.ino
-
-    // --- Log ---
+    // --- Log Çıktısı ---
     Serial.println("[SENSORS] Moisture: " + String(moisturePercent, 1)
         + "% (raw: " + String(moistureRaw) + ")"
         + " | Rain: " + String(isRaining ? "YES" : "NO")

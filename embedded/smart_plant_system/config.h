@@ -31,13 +31,13 @@
 // ============================================================
 
 // --- Capacitive Soil Moisture Sensor (Responsible: Teammate) ---
-#define MOISTURE_SENSOR_PIN   32    // AOUT -> GPIO 32
+#define MOISTURE_SENSOR_PIN   35    // AOUT -> GPIO 32
 
 // --- Rain/Snow Sensor (Responsible: Team member) ---
-#define RAIN_SENSOR_PIN       25    // D0 -> GPIO 25
+#define RAIN_SENSOR_PIN       33    // D0 -> GPIO 25
 
 // --- 1 Channel Relay Module / Water Pump (Responsible: [Your Name]) ---
-#define RELAY_PIN             26    // IN -> GPIO 26
+#define RELAY_PIN             35    // IN -> GPIO 26
 
 // ============================================================
 //  Moisture Sensor Calibration
