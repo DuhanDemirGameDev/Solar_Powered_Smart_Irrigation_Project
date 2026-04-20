@@ -53,6 +53,7 @@ unsigned long pumpCooldownEnd      = 0;
 unsigned long pumpTotalRunToday    = 0;       // seconds
 int           pumpCycleCount       = 0;
 String        pumpLastReason       = "";
+bool          manualOverride       = false;   // true = skip moisture auto-stop
 
 // ============================================================
 //  Moisture Data Cache
@@ -61,6 +62,14 @@ String        pumpLastReason       = "";
 //   updateMoistureData().)
 // ============================================================
 float  cachedMoisturePercent = 0.0;
+
+// ============================================================
+//  Rain Data Cache
+//  (Fed from outside — the rain sensor module provides
+//   the readings, the main sketch passes them here via
+//   updateRainData().)
+// ============================================================
+bool   cachedIsRaining = false;
 
 // ============================================================
 //  Initialization
@@ -84,6 +93,15 @@ void relaySetup() {
 // ============================================================
 void updateMoistureData(float moisturePercent) {
     cachedMoisturePercent = moisturePercent;
+}
+
+// ============================================================
+//  Rain Data Setter
+//  Call this from the main sketch after reading the rain
+//  sensor so relay_control always has fresh data.
+// ============================================================
+void updateRainData(bool isRaining) {
+    cachedIsRaining = isRaining;
 }
 
 // ============================================================
@@ -113,9 +131,10 @@ void relayUpdate() {
             }
 
             // --- Real-time moisture check: stop early if target reached ---
+            // ONLY for automatic/smart watering — manual overrides run full duration.
             // Uses cachedMoisturePercent which is updated by the main sketch
             // calling updateMoistureData() each sensor read cycle.
-            if (cachedMoisturePercent >= (float)MOISTURE_THRESHOLD_TARGET) {
+            if (!manualOverride && cachedMoisturePercent >= (float)MOISTURE_THRESHOLD_TARGET) {
                 Serial.println("[RELAY] Target moisture reached (" 
                     + String(cachedMoisturePercent, 1) + "%). Stopping early.");
                 stopPump("target_moisture_reached");
@@ -180,9 +199,19 @@ bool startPump(int durationSeconds) {
     pumpState = PUMP_RUNNING;
 
     Serial.println("[RELAY] ▶ PUMP STARTED | Duration: " + String(durationSeconds) 
-        + "s | Cycle #" + String(pumpCycleCount));
+        + "s | Cycle #" + String(pumpCycleCount)
+        + " | Mode: " + String(manualOverride ? "MANUAL" : "AUTO"));
 
     return true;
+}
+
+// ============================================================
+//  Start Pump Manually (from web panel / backend command)
+//  Skips moisture-based early stop — runs for the full duration.
+// ============================================================
+bool startPumpManual(int durationSeconds) {
+    manualOverride = true;
+    return startPump(durationSeconds);
 }
 
 // ============================================================
@@ -196,6 +225,7 @@ void stopPump(const char* reason) {
     unsigned long runtime = millis() - pumpStartTime;
     pumpTotalRunToday += runtime / 1000;
     pumpLastReason = String(reason);
+    manualOverride = false;  // Reset override on stop
 
     Serial.println("[RELAY] ■ PUMP STOPPED | Ran: " + String(runtime / 1000) 
         + "s | Reason: " + String(reason)
@@ -209,6 +239,13 @@ void stopPump(const char* reason) {
 //  Uses the cached moisture data fed via updateMoistureData().
 // ============================================================
 bool startSmartWatering() {
+    // --- Rain Check: If it's raining, skip auto-watering ---
+    if (cachedIsRaining) {
+        Serial.println("[RELAY] Smart watering declined: Rain detected 🌧️"
+            " — rain is watering the plant naturally.");
+        return false;
+    }
+
     if (cachedMoisturePercent >= (float)MOISTURE_THRESHOLD_LOW) {
         Serial.println("[RELAY] Smart watering declined: Moisture " 
             + String(cachedMoisturePercent, 1) + "% (threshold: " 
@@ -218,6 +255,8 @@ bool startSmartWatering() {
 
     // Determine watering duration based on current moisture level
     int duration = calculateWateringDuration();
+    if (duration <= 0) return false;
+
     Serial.println("[RELAY] Smart watering: Moisture " 
         + String(cachedMoisturePercent, 1) + "% → " + String(duration) + "s");
 

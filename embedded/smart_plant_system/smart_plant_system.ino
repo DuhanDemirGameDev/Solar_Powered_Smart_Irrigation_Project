@@ -12,9 +12,10 @@
 // ============================================================
 //  Timing Trackers
 // ============================================================
-unsigned long lastSensorRead   = 0;
-unsigned long lastDataSend     = 0;
-unsigned long lastCommandCheck = 0;
+unsigned long lastSensorRead      = 0;
+unsigned long lastDataSend        = 0;
+unsigned long lastCommandCheck    = 0;
+unsigned long lastAutoWaterCheck  = 0;
 
 // ============================================================
 //  Global Sensor States
@@ -83,6 +84,12 @@ void loop() {
         checkAndExecuteCommand();
     }
 
+    // Periyodik: Otomatik sulama koşullarını kontrol et (Örn: 60 saniyede bir)
+    if (now - lastAutoWaterCheck >= AUTO_WATER_CHECK_INTERVAL_MS) {
+        lastAutoWaterCheck = now;
+        autoWateringCheck();
+    }
+
     delay(10);  // İşlemciyi rahatlatmak için kısa bekleme
 }
 
@@ -102,6 +109,9 @@ void readAllSensors() {
     rainSensorUpdate();             // Fiziksel okumayı yap
     isRaining = getIsRaining();     // Modülden mantıksal durumu al
     rainRawValue = getRainRawValue(); // Modülden ham değeri al
+
+    // Yağmur verisini röle modülüne aktar (otomatik sulama kararı için)
+    updateRainData(isRaining);
 
     // --- Log Çıktısı ---
     Serial.println("[SENSORS] Nem: %" + String(moisturePercent, 1)
@@ -141,7 +151,7 @@ void checkAndExecuteCommand() {
     Serial.println("[SYSTEM] Komut Alındı: " + cmd.action + " | Neden: " + cmd.reason);
 
     if (cmd.action == "start") {
-        if (cmd.duration > 0) startPump(cmd.duration);
+        if (cmd.duration > 0) startPumpManual(cmd.duration);  // Manual: skip moisture auto-stop
         else startSmartWatering();
     }
     else if (cmd.action == "stop") {
@@ -150,4 +160,21 @@ void checkAndExecuteCommand() {
     else if (cmd.action == "heat_burst") {
         startHeatProtectionBurst();
     }
+}
+
+// ============================================================
+//  Automatic Watering Check
+//  Called periodically. Evaluates rain + moisture conditions
+//  and starts watering autonomously when needed.
+// ============================================================
+void autoWateringCheck() {
+    // Pompa zaten çalışıyorsa veya bekleme süresindeyse atla
+    if (isPumpRunning() || isPumpInCooldown()) return;
+
+    Serial.println("[SYSTEM] Otomatik sulama kontrolü..."
+        " | Yağmur: " + String(isRaining ? "EVET" : "HAYIR")
+        + " | Nem: %" + String(moisturePercent, 1));
+
+    // startSmartWatering() zaten yağmur ve nem kontrolü yapıyor
+    startSmartWatering();
 }

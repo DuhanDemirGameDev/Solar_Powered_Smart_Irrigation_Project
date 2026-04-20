@@ -14,13 +14,13 @@
 // ============================================================
 //  WiFi Configuration (Shared — used by wifi_communication.ino)
 // ============================================================
-#define WIFI_SSID       "realme 8"
-#define WIFI_PASSWORD   "gdkuesy6"
+#define WIFI_SSID       "Yakup"
+#define WIFI_PASSWORD   "yakyak34"
 
 // ============================================================
 //  Backend Server Configuration (Shared)
 // ============================================================
-#define BACKEND_HOST    "10.67.40.203"         // Backend server IP address
+#define BACKEND_HOST    "10.229.104.171"         // Backend server IP address
 #define BACKEND_PORT    8000                     // Backend server port
 #define ENDPOINT_DATA   "/api/sensor-data"       // POST: send all sensor data
 #define ENDPOINT_CMD    "/api/pump-command"       // GET:  receive pump commands
@@ -37,17 +37,19 @@
 #define RAIN_SENSOR_PIN       33    // D0 -> GPIO 25
 
 // --- 1 Channel Relay Module / Water Pump (Responsible: [Your Name]) ---
-#define RELAY_PIN             35    // IN -> GPIO 26
+#define RELAY_PIN             25    // IN -> GPIO 26
 
 // ============================================================
 //  Moisture Sensor Calibration
 //  (Defined by moisture sensor teammate.
 //   Kept here so it's accessible system-wide via config.h)
 // ============================================================
-// NOTE: The following values should be set by the moisture sensor
-//       team member after calibrating their sensor.
-#define MOISTURE_AIR_VALUE    3200    // ADC reading in air   = 0% moisture
-#define MOISTURE_WATER_VALUE  1200    // ADC reading in water = 100% moisture
+// NOTE: Calibrate these values with YOUR specific sensor:
+//   1. Power on the sensor in open air → note the ADC value → MOISTURE_AIR_VALUE
+//   2. Dip the sensor in water         → note the ADC value → MOISTURE_WATER_VALUE
+// Typical capacitive sensor range on ESP32 (12-bit ADC, 11dB attenuation):
+#define MOISTURE_AIR_VALUE    3500    // ADC reading in dry air = 0% moisture
+#define MOISTURE_WATER_VALUE  1400    // ADC reading in water   = 100% moisture
 
 // ============================================================
 //  Pump / Watering Thresholds
@@ -67,9 +69,10 @@
 // ============================================================
 //  Timing Intervals (milliseconds)
 // ============================================================
-#define SENSOR_READ_INTERVAL_MS    5000    // Read sensors every 5 seconds
-#define DATA_SEND_INTERVAL_MS      15000   // Send data to backend every 15 seconds
-#define COMMAND_CHECK_INTERVAL_MS  10000   // Check for commands every 10 seconds
+#define SENSOR_READ_INTERVAL_MS    2000    // Read sensors every 2 seconds
+#define DATA_SEND_INTERVAL_MS      5000    // Send data to backend every 5 seconds
+#define COMMAND_CHECK_INTERVAL_MS  3000    // Check for commands every 3 seconds
+#define AUTO_WATER_CHECK_INTERVAL_MS 60000 // Check auto-watering conditions every 60 seconds
 
 // ============================================================
 //  Relay Logic
