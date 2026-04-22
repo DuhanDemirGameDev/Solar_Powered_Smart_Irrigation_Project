@@ -14,7 +14,7 @@
  * 
  * Backend API Contract:
  * 
- * POST /api/sensor-data
+ * POST /api/v1/sensors
  * {
  *   "moisture_percent": 25.5,
  *   "moisture_raw": 2800,

@@ -24,11 +24,23 @@ public class SensorData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Double soilMoistureLevel;
+    @Column(name = "moisture_percent", nullable = false)
+    private Double moisturePercent;
 
-    @Column(nullable = false)
+    @Column(name = "moisture_raw", nullable = false)
+    private Integer moistureRaw;
+
+    @Column(name = "is_raining", nullable = false)
     private Boolean isRaining;
+
+    @Column(name = "rain_sensor_raw", nullable = false)
+    private Integer rainSensorRaw;
+
+    @Column(name = "pump_state", nullable = false, length = 32)
+    private String pumpState;
+
+    @Column(name = "pump_remaining_time", nullable = false)
+    private Integer pumpRemainingTime;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;

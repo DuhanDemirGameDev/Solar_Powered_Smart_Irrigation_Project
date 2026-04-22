@@ -18,8 +18,12 @@ public class SensorService {
     @Transactional
     public SensorDataDto saveSensorData(SensorDataDto sensorDataDto) {
         SensorData sensorData = SensorData.builder()
-                .soilMoistureLevel(sensorDataDto.getSoilMoistureLevel())
+                .moisturePercent(sensorDataDto.getMoisturePercent())
+                .moistureRaw(sensorDataDto.getMoistureRaw())
                 .isRaining(sensorDataDto.getIsRaining())
+                .rainSensorRaw(sensorDataDto.getRainSensorRaw())
+                .pumpState(sensorDataDto.getPumpState())
+                .pumpRemainingTime(sensorDataDto.getPumpRemainingTime())
                 .timestamp(resolveTimestamp(sensorDataDto.getTimestamp()))
                 .build();
 
@@ -38,8 +42,12 @@ public class SensorService {
     private SensorDataDto mapToDto(SensorData sensorData) {
         return SensorDataDto.builder()
                 .id(sensorData.getId())
-                .soilMoistureLevel(sensorData.getSoilMoistureLevel())
+                .moisturePercent(sensorData.getMoisturePercent())
+                .moistureRaw(sensorData.getMoistureRaw())
                 .isRaining(sensorData.getIsRaining())
+                .rainSensorRaw(sensorData.getRainSensorRaw())
+                .pumpState(sensorData.getPumpState())
+                .pumpRemainingTime(sensorData.getPumpRemainingTime())
                 .timestamp(sensorData.getTimestamp())
                 .build();
     }

@@ -4,6 +4,7 @@ import com.example.backend.domain.dto.IrrigationLogDto;
 import com.example.backend.services.IrrigationService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class IrrigationController {
 
     private final IrrigationService irrigationService;
+
+    @GetMapping("/api/pump-command")
+    public ResponseEntity<Map<String, Object>> getPumpCommand() {
+        return ResponseEntity.ok(Map.of(
+                "command", "IDLE", // could also be "START" or "STOP"
+                "duration", 0
+        ));
+    }
 
     @PostMapping("/log")
     public ResponseEntity<IrrigationLogDto> logPumpAction(@Valid @RequestBody IrrigationLogDto irrigationLogDto) {
