@@ -5,8 +5,9 @@ import com.example.backend.domain.entities.IrrigationLog;
 import com.example.backend.repositories.IrrigationLogRepository;
 import java.time.LocalDateTime;
 import java.util.Locale;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,11 +31,9 @@ public class IrrigationService {
     }
 
     @Transactional(readOnly = true)
-    public List<IrrigationLogDto> getIrrigationHistory() {
-        return irrigationLogRepository.findAll(Sort.by(Sort.Direction.DESC, "timestamp"))
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+    public Page<IrrigationLogDto> getIrrigationHistory(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
+        return irrigationLogRepository.findAll(pageRequest).map(this::mapToDto);
     }
 
     private IrrigationLogDto mapToDto(IrrigationLog irrigationLog) {

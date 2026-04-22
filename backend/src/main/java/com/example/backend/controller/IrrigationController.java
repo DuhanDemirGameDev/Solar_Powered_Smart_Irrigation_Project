@@ -3,14 +3,15 @@ package com.example.backend.controller;
 import com.example.backend.domain.dto.IrrigationLogDto;
 import com.example.backend.services.IrrigationService;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ public class IrrigationController {
 
     private final IrrigationService irrigationService;
 
-    @GetMapping("/api/pump-command")
+    @GetMapping({"/command", "/api/pump-command"})
     public ResponseEntity<Map<String, Object>> getPumpCommand() {
         return ResponseEntity.ok(Map.of(
                 "command", "IDLE", // could also be "START" or "STOP"
@@ -36,7 +37,10 @@ public class IrrigationController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<List<IrrigationLogDto>> getIrrigationHistory() {
-        return ResponseEntity.ok(irrigationService.getIrrigationHistory());
+    public ResponseEntity<Page<IrrigationLogDto>> getIrrigationHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(irrigationService.getIrrigationHistory(page, size));
     }
 }

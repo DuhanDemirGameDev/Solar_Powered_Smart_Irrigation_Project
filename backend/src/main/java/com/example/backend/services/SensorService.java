@@ -4,8 +4,10 @@ import com.example.backend.domain.dto.SensorDataDto;
 import com.example.backend.domain.entities.SensorData;
 import com.example.backend.repositories.SensorDataRepository;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +34,9 @@ public class SensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorDataDto> getSensorHistory() {
-        return sensorDataRepository.findTop10ByOrderByTimestampDesc()
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+    public Page<SensorDataDto> getSensorHistory(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
+        return sensorDataRepository.findAll(pageRequest).map(this::mapToDto);
     }
 
     private SensorDataDto mapToDto(SensorData sensorData) {
