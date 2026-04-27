@@ -12,16 +12,37 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequiredArgsConstructor
 public class SensorController {
 
     private final SensorService sensorService;
+    private RestTemplate restTemplate = new RestTemplate();
 
     @PostMapping({"/api/v1/sensors", "/api/sensor-data"})
     public ResponseEntity<SensorDataDto> createSensorData(@Valid @RequestBody SensorDataDto sensorDataDto) {
         SensorDataDto savedSensorData = sensorService.saveSensorData(sensorDataDto);
+
+        // AI model call
+        String pythonApiUrl = "http://127.0.0.1:5000/predict";
+
+        Map<String, Object> pythonRequest = Map.of(
+                "moisture", sensorDataDto.getMoisturePercent()
+        );
+
+        Map response = restTemplate.postForObject(
+                pythonApiUrl,
+                pythonRequest,
+                Map.class
+        );
+
+        if (response != null && response.get("decision") != null) {
+            IrrigationState.lastDecision = response.get("decision").toString();
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSensorData);
     }
 

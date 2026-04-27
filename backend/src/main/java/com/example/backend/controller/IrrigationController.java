@@ -24,9 +24,23 @@ public class IrrigationController {
 
     @GetMapping({"/command", "/api/pump-command"})
     public ResponseEntity<Map<String, Object>> getPumpCommand() {
+
+        String decision = IrrigationState.lastDecision;
+
+        if ("IRRIGATE".equals(decision)) {
+            return ResponseEntity.ok(Map.of(
+                    "hasCommand", true,
+                    "action", "start",
+                    "duration", 15,
+                    "reason", "AI decision: IRRIGATE"
+            ));
+        }
+
         return ResponseEntity.ok(Map.of(
-                "command", "IDLE", // could also be "START" or "STOP"
-                "duration", 0
+                "hasCommand", false,
+                "action", "none",
+                "duration", 0,
+                "reason", "AI decision: " + decision
         ));
     }
 
@@ -43,4 +57,5 @@ public class IrrigationController {
     ) {
         return ResponseEntity.ok(irrigationService.getIrrigationHistory(page, size));
     }
+
 }
