@@ -23,7 +23,7 @@
 #define BACKEND_HOST    "10.229.104.171"         // Backend server IP address
 #define BACKEND_PORT    8081                     // Spring Boot backend port
 #define ENDPOINT_DATA   "/api/v1/sensors"        // POST: send all sensor data
-#define ENDPOINT_CMD    "/api/v1/irrigation/api/pump-command"       // GET:  receive pump commands
+#define ENDPOINT_CMD    "/api/v1/irrigation/command"       // GET:  receive pump commands
 
 // ============================================================
 //  Pin Definitions (from Hardware Pin Schema)

@@ -22,7 +22,7 @@ public class IrrigationController {
 
     private final IrrigationService irrigationService;
 
-    @GetMapping({"/command", "/api/pump-command"})
+    @GetMapping("/command")
     public ResponseEntity<Map<String, Object>> getPumpCommand() {
 
         String decision = IrrigationState.lastDecision;

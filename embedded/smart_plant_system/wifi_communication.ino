@@ -24,7 +24,7 @@
  *   "pump_remaining_time": 0
  * }
  * 
- * GET /api/pump-command
+ * GET /api/v1/irrigation/command
  * Response:
  * {
  *   "action": "start" | "stop" | "heat_burst" | "none",
