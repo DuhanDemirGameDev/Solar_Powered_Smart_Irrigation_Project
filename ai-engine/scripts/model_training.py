@@ -17,7 +17,7 @@ print("dataset.csv exists:", os.path.exists(DATASET_PATH))
 df = pd.read_csv(DATASET_PATH)
 
 # Features and target
-X = df[["moisture", "rain_prob", "temperature", "humidity"]]
+X = df[["moisture", "rain_prob", "is_raining", "temperature", "humidity"]]
 y = df["decision"]
 
 # Split into training and testing sets
@@ -38,15 +38,15 @@ print(classification_report(y_test, y_pred))
 # Test with sample inputs
 print("\nSample predictions")
 samples = [
-    [35, 55, 28, 60],   # mid-range
-    [20, 20, 15, 40],    # irrigation case
-    [80, 30, 25, 50],   # no irrigation
-    [50, 75, 20, 65],   # postpone
+    [35, 55, 0, 28, 60],   # mid-range
+    [20, 20, 0, 15, 40],    # irrigation case
+    [80, 30, 0, 25, 50],   # no irrigation
+    [50, 75, 0, 25, 40],   # postpone
 ]
 for sample in samples:
-    sample_df = pd.DataFrame([sample], columns=["moisture", "rain_prob", "temperature", "humidity"])
+    sample_df = pd.DataFrame([sample], columns=["moisture", "rain_prob", "is_raining", "temperature", "humidity"])
     prediction = model.predict(sample_df)[0]
-    print(f"moisture:{sample[0]} rain_prob:{sample[1]} temperature:{sample[2]} → {prediction}")
+    print(f"moisture:{sample[0]} rain_prob:{sample[1]} is_raining:{sample[2]} temperature:{sample[3]} → {prediction}")
 
 # Save the model
 with open(MODEL_PATH, "wb") as f:

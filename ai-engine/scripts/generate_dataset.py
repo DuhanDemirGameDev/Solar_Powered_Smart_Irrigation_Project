@@ -15,7 +15,12 @@ for _ in range(1000):
     moisture = max(0, min(100, moisture))
     rain_prob = max(0, min(100, rain_prob))
 
-    if moisture > 70:
+    is_raining = random.random() < 0.3
+
+    if is_raining:
+        decision = "POSTPONE"
+
+    elif moisture > 70:
         decision = "NO_IRRIGATION" if random.random() < 0.9 else "WAIT"
 
     elif rain_prob > 60:
@@ -35,9 +40,9 @@ for _ in range(1000):
     else:
         decision = "WAIT"
 
-    data.append([moisture, rain_prob, temperature, humidity, decision])
+    data.append([moisture, rain_prob, is_raining, temperature, humidity, decision])
 
-df = pd.DataFrame(data, columns=["moisture", "rain_prob", "temperature", "humidity", "decision"])
+df = pd.DataFrame(data, columns=["moisture", "rain_prob", "is_raining", "temperature", "humidity", "decision"])
 base_dir = os.path.dirname(os.path.abspath(__file__))
 DATASET_PATH = os.path.join(base_dir, "..", "model", "dataset.csv")
 df.to_csv(DATASET_PATH, index=False)

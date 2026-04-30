@@ -44,17 +44,15 @@ def predict():
 
     except requests.exceptions.Timeout:
         print("API timeout, using default values")
-        rain_prob, temperature, humidity, hour_of_day = 0, 20, 50, 12
+        rain_prob, temperature, humidity = 0, 20, 50
 
     except Exception as e:
         print(f"Unexpected error: {e}")
-        rain_prob, temperature, humidity, hour_of_day = 0, 20, 50, 12
-
-    rain_prob = 100.0 if is_raining else rain_prob
+        rain_prob, temperature, humidity = 0, 20, 50
 
     input_data = pd.DataFrame(
-        [[moisture, rain_prob, temperature, humidity]],
-        columns=["moisture", "rain_prob", "temperature", "humidity"]
+        [[moisture, rain_prob, int(is_raining), temperature, humidity]],
+        columns=["moisture", "rain_prob", "is_raining", "temperature", "humidity"]
     )
     decision = model.predict(input_data)[0]
 
