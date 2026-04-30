@@ -20,6 +20,8 @@ def predict():
     body = request.get_json()
 
     moisture = body.get("moisture")
+    is_raining = body.get("is_raining", False)
+    
     if moisture is None:
         return jsonify({"error": "moisture is required"}), 400
 
@@ -49,6 +51,8 @@ def predict():
         print(f"Unexpected error: {e}")
         rain_prob, temperature, humidity, hour_of_day = 0, 20, 50, 12
 
+    rain_prob = 100.0 if is_raining else rain_prob
+
     input_data = pd.DataFrame(
         [[moisture, rain_prob, temperature, humidity, hour_of_day]],
         columns=["moisture", "rain_prob", "temperature", "humidity", "hour_of_day"]
@@ -61,7 +65,8 @@ def predict():
         "rain_prob": rain_prob,
         "temperature": temperature,
         "humidity": humidity,
-        "hour_of_day": hour_of_day
+        "hour_of_day": hour_of_day,
+        "is_raining": is_raining
     })
 
 if __name__ == "__main__":

@@ -30,7 +30,8 @@ public class SensorController {
         String pythonApiUrl = "http://127.0.0.1:5000/predict";
 
         Map<String, Object> pythonRequest = Map.of(
-                "moisture", sensorDataDto.getMoisturePercent()
+                "moisture", sensorDataDto.getMoisturePercent(),
+                "is_raining", sensorDataDto.getIsRaining()
         );
 
         Map response = restTemplate.postForObject(
