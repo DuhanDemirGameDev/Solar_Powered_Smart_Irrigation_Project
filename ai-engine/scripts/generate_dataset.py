@@ -11,7 +11,6 @@ for _ in range(1000):
     rain_prob = random.randint(0, 100) + random.uniform(-5, 5)
     temperature = round(random.uniform(0, 40), 1)
     humidity = random.randint(20, 100)
-    hour_of_day = random.randint(0, 23)
 
     moisture = max(0, min(100, moisture))
     rain_prob = max(0, min(100, rain_prob))
@@ -36,9 +35,9 @@ for _ in range(1000):
     else:
         decision = "WAIT"
 
-    data.append([moisture, rain_prob, temperature, humidity, hour_of_day, decision])
+    data.append([moisture, rain_prob, temperature, humidity, decision])
 
-df = pd.DataFrame(data, columns=["moisture", "rain_prob", "temperature", "humidity", "hour_of_day", "decision"])
+df = pd.DataFrame(data, columns=["moisture", "rain_prob", "temperature", "humidity", "decision"])
 base_dir = os.path.dirname(os.path.abspath(__file__))
 DATASET_PATH = os.path.join(base_dir, "..", "model", "dataset.csv")
 df.to_csv(DATASET_PATH, index=False)

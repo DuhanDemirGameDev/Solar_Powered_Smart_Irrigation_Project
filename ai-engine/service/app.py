@@ -37,11 +37,10 @@ def predict():
         rain_prob = first["pop"] * 100
         temperature = first["main"]["temp"]
         humidity = first["main"]["humidity"]
-        hour_of_day = (int(first["dt_txt"][11:13]) + 3) % 24  # UTC+3
 
     except requests.exceptions.ConnectionError:
         print("No internet connection, using default values")
-        rain_prob, temperature, humidity, hour_of_day = 0, 20, 50, 12
+        rain_prob, temperature, humidity = 0, 20, 50
 
     except requests.exceptions.Timeout:
         print("API timeout, using default values")
@@ -54,8 +53,8 @@ def predict():
     rain_prob = 100.0 if is_raining else rain_prob
 
     input_data = pd.DataFrame(
-        [[moisture, rain_prob, temperature, humidity, hour_of_day]],
-        columns=["moisture", "rain_prob", "temperature", "humidity", "hour_of_day"]
+        [[moisture, rain_prob, temperature, humidity]],
+        columns=["moisture", "rain_prob", "temperature", "humidity"]
     )
     decision = model.predict(input_data)[0]
 
@@ -65,7 +64,6 @@ def predict():
         "rain_prob": rain_prob,
         "temperature": temperature,
         "humidity": humidity,
-        "hour_of_day": hour_of_day,
         "is_raining": is_raining
     })
 
