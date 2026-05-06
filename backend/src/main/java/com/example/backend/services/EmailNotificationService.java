@@ -3,6 +3,7 @@ package com.example.backend.services;
 import com.example.backend.domain.entities.NotificationLog;
 import com.example.backend.repositories.NotificationLogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class EmailNotificationService {
     
-    private final JavaMailSender mailSender;
+    private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final NotificationLogRepository notificationLogRepository;
 
     // Duhan'ın sensör verisi gelirken çağıracağı Acil Durum fonksiyonu
@@ -20,6 +21,12 @@ public class EmailNotificationService {
         String msgContent = "ACİL: Toprak nemi kritik seviyede: %" + moistureLevel;
         
         try {
+            JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
+            if (mailSender == null) {
+                saveLog("SMTP is not configured. Skipped email alert: " + msgContent, "EMAIL_SKIPPED");
+                return;
+            }
+
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
             message.setSubject("Akıllı Sulama Sistemi Uyarısı");

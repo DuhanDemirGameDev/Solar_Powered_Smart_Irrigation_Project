@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -34,14 +35,18 @@ public class SensorController {
                 "is_raining", sensorDataDto.getIsRaining()
         );
 
-        Map response = restTemplate.postForObject(
-                pythonApiUrl,
-                pythonRequest,
-                Map.class
-        );
+        try {
+            Map response = restTemplate.postForObject(
+                    pythonApiUrl,
+                    pythonRequest,
+                    Map.class
+            );
 
-        if (response != null && response.get("decision") != null) {
-            IrrigationState.lastDecision = response.get("decision").toString();
+            if (response != null && response.get("decision") != null) {
+                IrrigationState.lastDecision = response.get("decision").toString();
+            }
+        } catch (RestClientException ex) {
+            IrrigationState.lastDecision = "AI_SERVICE_UNAVAILABLE";
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSensorData);
