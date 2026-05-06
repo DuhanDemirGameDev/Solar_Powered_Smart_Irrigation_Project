@@ -14,7 +14,7 @@
  * 
  * Backend API Contract:
  * 
- * POST /api/sensor-data
+ * POST /api/v1/sensors
  * {
  *   "moisture_percent": 25.5,
  *   "moisture_raw": 2800,
@@ -24,7 +24,7 @@
  *   "pump_remaining_time": 0
  * }
  * 
- * GET /api/pump-command
+ * GET /api/v1/irrigation/command
  * Response:
  * {
  *   "action": "start" | "stop" | "heat_burst" | "none",

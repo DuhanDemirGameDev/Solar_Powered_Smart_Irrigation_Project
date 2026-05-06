@@ -21,6 +21,7 @@ venv/
 env/
 .env
 *.pkl
+!ai-engine/model/irrigation_model.pkl
 
 # --- Node.js / React / Vue (Ön Yüz ve Mobil) ---
 node_modules/

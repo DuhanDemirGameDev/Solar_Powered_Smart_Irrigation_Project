@@ -23,6 +23,7 @@ pending_command = {
 }
 
 # 1. ESP32'nin veri gönderdiği POST ucu (Sensörlerden gelen veri)
+@app.post("/api/v1/sensors")
 @app.post("/api/sensor-data")
 async def receive_data(request: Request):
     global latest_data
@@ -33,6 +34,7 @@ async def receive_data(request: Request):
     return {"status": "success"}
 
 # 2. YENİ: ESP32'nin komut almaya geldiği GET ucu
+@app.get("/api/v1/irrigation/command")
 @app.get("/api/pump-command")
 async def get_command():
     global pending_command

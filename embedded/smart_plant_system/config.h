@@ -28,10 +28,17 @@
 // ============================================================
 //  Backend Server Configuration (Shared)
 // ============================================================
+<<<<<<< HEAD
 #define BACKEND_HOST    "10.188.181.203"         // Backend server IP address
 #define BACKEND_PORT    8000                     // Backend server port
 #define ENDPOINT_DATA   "/api/sensor-data"       // POST: send all sensor data
 #define ENDPOINT_CMD    "/api/pump-command"       // GET:  receive pump commands
+=======
+#define BACKEND_HOST    "10.229.104.171"         // Backend server IP address
+#define BACKEND_PORT    8081                     // Spring Boot backend port
+#define ENDPOINT_DATA   "/api/v1/sensors"        // POST: send all sensor data
+#define ENDPOINT_CMD    "/api/v1/irrigation/command"       // GET:  receive pump commands
+>>>>>>> 84f6866def3b414bb06e3bb5702db95d7b96c359
 
 // ============================================================
 //  Pin Definitions (Updated Hardware Pin Schema)
