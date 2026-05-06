@@ -1,9 +1,23 @@
 /*
  * smart_plant_system.ino
  * ======================
- * Main Sketch — Smart Plant Watering System (Final Modular Version)
- * * Bu dosya sistemin giriş noktasıdır. Tüm modülleri (Nem, Yağmur, Röle, WiFi)
+ * Main Sketch — Smart Plant Watering System (MOSFET Version)
+ *
+ * Bu dosya sistemin giriş noktasıdır. Tüm modülleri (Nem, Yağmur, MOSFET, WiFi)
  * koordine eder ve ana döngüyü yönetir.
+ *
+ * HARDWARE SUMMARY:
+ *   - ESP32 DevKit v1
+ *   - Capacitive Soil Moisture Sensor → GPIO35 (data), GPIO4 (power)
+ *   - Rain/Snow Sensor               → GPIO34 (data), GPIO14 (power)
+ *   - N-Channel MOSFET + Water Pump  → GPIO25 (gate)
+ *   - Solar panel + battery for power
+ *
+ * KEY DESIGN: Smart Sleep Sensor Power Management
+ *   Sensors are NOT connected to 3.3V continuously.
+ *   Their VCC pins are connected to GPIO outputs (GPIO4, GPIO14)
+ *   so ESP32 can power them on/off programmatically.
+ *   This saves ~10-25mA of continuous current — critical for solar power.
  */
 
 #include "config.h"
@@ -34,25 +48,26 @@ void setup() {
 
     Serial.println();
     Serial.println("╔══════════════════════════════════════════╗");
-    Serial.println("║    Smart Plant Watering System v1.1      ║");
-    Serial.println("║    ESP32 — Electronic Control Unit       ║");
+    Serial.println("║    Smart Plant Watering System v2.0      ║");
+    Serial.println("║    ESP32 — MOSFET Edition (Solar)        ║");
     Serial.println("╚══════════════════════════════════════════╝");
     Serial.println();
 
-    // --- 1. Rain Sensor Module (Senin Modülün) ---
+    // --- 1. Rain Sensor Module (Sude Nur'un Modülü) ---
     rainSensorSetup(); 
 
     // --- 2. Moisture Sensor Module (Takım Arkadaşının Modülü) ---
     moistureSensorSetup(); 
 
-    // --- 3. Relay / Pump Module (Yakup'un Modülü) ---
-    relaySetup();               
+    // --- 3. MOSFET / Pump Module (Röle yerine MOSFET) ---
+    mosfetSetup();               
 
     // --- 4. WiFi Communication Module (Ortak Modül) ---
     wifiSetup();                
 
     Serial.println();
     Serial.println("[SYSTEM] ✓ Tüm modüller başarıyla bağlandı.");
+    Serial.println("[SYSTEM] ✓ Smart Sleep aktif — sensörler sadece okuma sırasında güç alır.");
     Serial.println("──────────────────────────────────────────");
 }
 
@@ -63,22 +78,22 @@ void loop() {
     unsigned long now = millis();
 
     // Pompa durum makinesini ve WiFi bağlantısını her döngüde kontrol et
-    relayUpdate();              
+    mosfetUpdate();              
     wifiMaintain();             
 
-    // Periyodik: Sensörleri oku (Örn: 5 saniyede bir)
+    // Periyodik: Sensörleri oku (Örn: 2 saniyede bir)
     if (now - lastSensorRead >= SENSOR_READ_INTERVAL_MS) {
         lastSensorRead = now;
         readAllSensors();
     }
 
-    // Periyodik: Verileri backend'e gönder (Örn: 15 saniyede bir)
+    // Periyodik: Verileri backend'e gönder (Örn: 5 saniyede bir)
     if (now - lastDataSend >= DATA_SEND_INTERVAL_MS) {
         lastDataSend = now;
         sendDataToBackend();
     }
 
-    // Periyodik: Backend'den gelen komutları kontrol et (Örn: 10 saniyede bir)
+    // Periyodik: Backend'den gelen komutları kontrol et (Örn: 3 saniyede bir)
     if (now - lastCommandCheck >= COMMAND_CHECK_INTERVAL_MS) {
         lastCommandCheck = now;
         checkAndExecuteCommand();
@@ -95,22 +110,26 @@ void loop() {
 
 // ============================================================
 //  Read All Sensors (Modül Entegrasyon Noktası)
+//  NOTE: Each sensor module handles its own Smart Sleep
+//  power management internally (power on → read → power off).
 // ============================================================
 void readAllSensors() {
     // --- 1. Moisture Sensor İşlemleri ---
+    // (internally: GPIO4 HIGH → warm-up → ADC read → GPIO4 LOW)
     moistureSensorUpdate(); 
     moisturePercent = getMoisturePercentage();
     moistureRaw = getMoistureRaw();
 
-    // Nem verisini karar vermesi için Yakup'un röle modülüne aktar
+    // Nem verisini karar vermesi için MOSFET modülüne aktar
     updateMoistureData(moisturePercent); 
 
-    // --- 2. Rain Sensor İşlemleri (Senin Yeni Modülün) ---
-    rainSensorUpdate();             // Fiziksel okumayı yap
-    isRaining = getIsRaining();     // Modülden mantıksal durumu al
-    rainRawValue = getRainRawValue(); // Modülden ham değeri al
+    // --- 2. Rain Sensor İşlemleri ---
+    // (internally: GPIO14 HIGH → warm-up → digital read → GPIO14 LOW)
+    rainSensorUpdate();
+    isRaining = getIsRaining();
+    rainRawValue = getRainRawValue();
 
-    // Yağmur verisini röle modülüne aktar (otomatik sulama kararı için)
+    // Yağmur verisini MOSFET modülüne aktar (otomatik sulama kararı için)
     updateRainData(isRaining);
 
     // --- Log Çıktısı ---

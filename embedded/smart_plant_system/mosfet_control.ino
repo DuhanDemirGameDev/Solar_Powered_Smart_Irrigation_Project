@@ -1,16 +1,30 @@
 /*
- * relay_control.ino
- * =================
- * Water Pump Relay Control Module
+ * mosfet_control.ino
+ * ==================
+ * Water Pump MOSFET Control Module
+ * (Replaces the previous relay_control.ino)
  * 
- * Hardware: 1-Channel Relay Module + Water Pump
- * Pin:      IN → GPIO 26 (Digital Output)
- * Power:    DC+ → Battery | DC- → Common Ground
+ * Hardware: N-Channel MOSFET (e.g., IRLZ44N, IRF540N, or logic-level MOSFET)
+ * Pin:      GATE → GPIO25 (Digital Output from ESP32)
+ *           DRAIN → Pump (−) terminal
+ *           SOURCE → GND (common ground with ESP32 and power supply)
+ * Pump:     (+) terminal → Battery/Solar positive rail
  * 
- * Responsible: [Your Name]
+ * WHY MOSFET INSTEAD OF RELAY?
+ *   - No mechanical parts → silent, no click noise
+ *   - Much faster switching (nanoseconds vs milliseconds)
+ *   - Lower power consumption (no coil to energize)
+ *   - No back-EMF issues from relay coil
+ *   - Better suited for solar-powered systems
+ *   - Can be PWM-controlled for variable pump speed (future)
+ * 
+ * MOSFET LOGIC (N-Channel):
+ *   GATE HIGH → MOSFET conducts → Pump turns ON
+ *   GATE LOW  → MOSFET blocks   → Pump turns OFF
+ *   (Opposite to typical active-low relay modules)
  * 
  * This file provides all functions related to controlling
- * the water pump through the relay module. It implements:
+ * the water pump through the MOSFET. It implements:
  *   - Timed watering with automatic shutoff
  *   - Real-time moisture monitoring during watering (auto-stop when target reached)
  *   - Smart watering (duration based on moisture level)
@@ -22,14 +36,17 @@
  *       The moisture sensor module is maintained by a teammate.
  * 
  * Other modules can call these functions:
- *   - relaySetup()               → Initialize relay pin
- *   - relayUpdate()              → Must be called every loop (state machine)
+ *   - mosfetSetup()              → Initialize MOSFET pin
+ *   - mosfetUpdate()             → Must be called every loop (state machine)
  *   - updateMoistureData(pct)    → Feed latest moisture % from sensor module
+ *   - updateRainData(raining)    → Feed latest rain status from rain module
  *   - startPump(duration)        → Start pump for N seconds
+ *   - startPumpManual(duration)  → Start pump manually (skip moisture auto-stop)
  *   - stopPump(reason)           → Stop pump immediately
  *   - startSmartWatering()       → Auto-determine duration from moisture
  *   - startHeatProtectionBurst() → Short burst for hot weather
  *   - isPumpRunning()            → Check if pump is active
+ *   - isPumpInCooldown()         → Check if in cooldown
  *   - getPumpStateString()       → Get state as text
  *   - getPumpRemainingTime()     → Seconds remaining
  */
@@ -74,22 +91,22 @@ bool   cachedIsRaining = false;
 // ============================================================
 //  Initialization
 // ============================================================
-void relaySetup() {
-    pinMode(RELAY_PIN, OUTPUT);
+void mosfetSetup() {
+    pinMode(MOSFET_PIN, OUTPUT);
 
-    // Ensure pump starts OFF
-    relayOff();
+    // Ensure pump starts OFF (MOSFET gate LOW = not conducting)
+    mosfetOff();
     pumpState = PUMP_IDLE;
 
-    Serial.println("[RELAY] Initialized on GPIO " + String(RELAY_PIN));
-    Serial.println("[RELAY] Logic: " + String(RELAY_ACTIVE_LOW ? "ACTIVE LOW" : "ACTIVE HIGH"));
-    Serial.println("[RELAY] Safety max runtime: " + String(PUMP_MAX_RUNTIME) + "s");
+    Serial.println("[MOSFET] Initialized on GPIO " + String(MOSFET_PIN));
+    Serial.println("[MOSFET] Logic: ACTIVE HIGH (N-Channel MOSFET)");
+    Serial.println("[MOSFET] Safety max runtime: " + String(PUMP_MAX_RUNTIME) + "s");
 }
 
 // ============================================================
 //  Moisture Data Setter
 //  Call this from the main sketch after reading the moisture
-//  sensor so relay_control always has fresh data.
+//  sensor so mosfet_control always has fresh data.
 // ============================================================
 void updateMoistureData(float moisturePercent) {
     cachedMoisturePercent = moisturePercent;
@@ -98,7 +115,7 @@ void updateMoistureData(float moisturePercent) {
 // ============================================================
 //  Rain Data Setter
 //  Call this from the main sketch after reading the rain
-//  sensor so relay_control always has fresh data.
+//  sensor so mosfet_control always has fresh data.
 // ============================================================
 void updateRainData(bool isRaining) {
     cachedIsRaining = isRaining;
@@ -107,7 +124,7 @@ void updateRainData(bool isRaining) {
 // ============================================================
 //  State Machine — Call Every Loop Iteration
 // ============================================================
-void relayUpdate() {
+void mosfetUpdate() {
     switch (pumpState) {
         case PUMP_IDLE:
             // Nothing to do
@@ -118,14 +135,14 @@ void relayUpdate() {
 
             // --- Safety: Absolute max runtime ---
             if (elapsed >= (unsigned long)PUMP_MAX_RUNTIME * 1000UL) {
-                Serial.println("[RELAY] ⚠ SAFETY: Max runtime exceeded. Forcing stop.");
+                Serial.println("[MOSFET] ⚠ SAFETY: Max runtime exceeded. Forcing stop.");
                 stopPump("safety_max_runtime");
                 return;
             }
 
             // --- Timer expired ---
             if (elapsed >= pumpDuration) {
-                Serial.println("[RELAY] Timer expired after " + String(elapsed / 1000) + "s.");
+                Serial.println("[MOSFET] Timer expired after " + String(elapsed / 1000) + "s.");
                 stopPump("timer_expired");
                 return;
             }
@@ -135,7 +152,7 @@ void relayUpdate() {
             // Uses cachedMoisturePercent which is updated by the main sketch
             // calling updateMoistureData() each sensor read cycle.
             if (!manualOverride && cachedMoisturePercent >= (float)MOISTURE_THRESHOLD_TARGET) {
-                Serial.println("[RELAY] Target moisture reached (" 
+                Serial.println("[MOSFET] Target moisture reached (" 
                     + String(cachedMoisturePercent, 1) + "%). Stopping early.");
                 stopPump("target_moisture_reached");
                 return;
@@ -143,7 +160,7 @@ void relayUpdate() {
 
             // --- Progress log every 15 seconds ---
             if (elapsed > 0 && (elapsed % 15000) < 100) {
-                Serial.println("[RELAY] Running... " 
+                Serial.println("[MOSFET] Running... " 
                     + String(elapsed / 1000) + "s / " + String(pumpDuration / 1000) + "s"
                     + " | Moisture: " + String(cachedMoisturePercent, 1) + "%");
             }
@@ -151,16 +168,16 @@ void relayUpdate() {
         }
 
         case PUMP_STOPPING:
-            relayOff();
+            mosfetOff();
             pumpCooldownEnd = millis() + COOLDOWN_PERIOD_MS;
             pumpState = PUMP_COOLDOWN;
-            Serial.println("[RELAY] Cooldown started (" + String(COOLDOWN_PERIOD_MS / 1000) + "s).");
+            Serial.println("[MOSFET] Cooldown started (" + String(COOLDOWN_PERIOD_MS / 1000) + "s).");
             break;
 
         case PUMP_COOLDOWN:
             if (millis() >= pumpCooldownEnd) {
                 pumpState = PUMP_IDLE;
-                Serial.println("[RELAY] Cooldown complete. Ready.");
+                Serial.println("[MOSFET] Cooldown complete. Ready.");
             }
             break;
     }
@@ -172,21 +189,21 @@ void relayUpdate() {
 bool startPump(int durationSeconds) {
     // Validate state
     if (pumpState == PUMP_RUNNING) {
-        Serial.println("[RELAY] Already running. Ignoring.");
+        Serial.println("[MOSFET] Already running. Ignoring.");
         return false;
     }
     if (pumpState == PUMP_COOLDOWN) {
-        Serial.println("[RELAY] In cooldown. Please wait.");
+        Serial.println("[MOSFET] In cooldown. Please wait.");
         return false;
     }
     if (durationSeconds <= 0) {
-        Serial.println("[RELAY] Invalid duration: " + String(durationSeconds));
+        Serial.println("[MOSFET] Invalid duration: " + String(durationSeconds));
         return false;
     }
 
     // Clamp to safety max
     if (durationSeconds > PUMP_MAX_RUNTIME) {
-        Serial.println("[RELAY] Duration clamped to max " + String(PUMP_MAX_RUNTIME) + "s.");
+        Serial.println("[MOSFET] Duration clamped to max " + String(PUMP_MAX_RUNTIME) + "s.");
         durationSeconds = PUMP_MAX_RUNTIME;
     }
 
@@ -195,10 +212,10 @@ bool startPump(int durationSeconds) {
     pumpStartTime = millis();
     pumpCycleCount++;
 
-    relayOn();
+    mosfetOn();
     pumpState = PUMP_RUNNING;
 
-    Serial.println("[RELAY] ▶ PUMP STARTED | Duration: " + String(durationSeconds) 
+    Serial.println("[MOSFET] ▶ PUMP STARTED | Duration: " + String(durationSeconds) 
         + "s | Cycle #" + String(pumpCycleCount)
         + " | Mode: " + String(manualOverride ? "MANUAL" : "AUTO"));
 
@@ -227,7 +244,7 @@ void stopPump(const char* reason) {
     pumpLastReason = String(reason);
     manualOverride = false;  // Reset override on stop
 
-    Serial.println("[RELAY] ■ PUMP STOPPED | Ran: " + String(runtime / 1000) 
+    Serial.println("[MOSFET] ■ PUMP STOPPED | Ran: " + String(runtime / 1000) 
         + "s | Reason: " + String(reason)
         + " | Total today: " + String(pumpTotalRunToday) + "s");
 
@@ -241,13 +258,13 @@ void stopPump(const char* reason) {
 bool startSmartWatering() {
     // --- Rain Check: If it's raining, skip auto-watering ---
     if (cachedIsRaining) {
-        Serial.println("[RELAY] Smart watering declined: Rain detected 🌧️"
+        Serial.println("[MOSFET] Smart watering declined: Rain detected 🌧️"
             " — rain is watering the plant naturally.");
         return false;
     }
 
     if (cachedMoisturePercent >= (float)MOISTURE_THRESHOLD_LOW) {
-        Serial.println("[RELAY] Smart watering declined: Moisture " 
+        Serial.println("[MOSFET] Smart watering declined: Moisture " 
             + String(cachedMoisturePercent, 1) + "% (threshold: " 
             + String(MOISTURE_THRESHOLD_LOW) + "%)");
         return false;
@@ -257,7 +274,7 @@ bool startSmartWatering() {
     int duration = calculateWateringDuration();
     if (duration <= 0) return false;
 
-    Serial.println("[RELAY] Smart watering: Moisture " 
+    Serial.println("[MOSFET] Smart watering: Moisture " 
         + String(cachedMoisturePercent, 1) + "% → " + String(duration) + "s");
 
     return startPump(duration);
@@ -265,18 +282,26 @@ bool startSmartWatering() {
 
 // ============================================================
 //  Calculate Watering Duration from Moisture Level
-//    0-10%  → 3 minutes (critical)
-//    10-20% → 2 minutes (low)
-//    20-30% → 1 minute  (moderate)
-//    >30%   → 0 (no watering needed)
+//  Thresholds are derived from MOISTURE_THRESHOLD_LOW in config.h
+//  so they automatically adapt when the user changes the threshold.
+//
+//  Example with MOISTURE_THRESHOLD_LOW = 40:
+//    0-13%   → 45s (critical — below 1/3 of threshold)
+//    13-26%  → 30s (low — below 2/3 of threshold)
+//    26-40%  → 15s (moderate — below threshold)
+//    ≥40%    → 0 (no watering needed)
 // ============================================================
 int calculateWateringDuration() {
-    if (cachedMoisturePercent <= 10.0) {
-        return PUMP_DURATION_CRITICAL;    // 180s
-    } else if (cachedMoisturePercent <= 20.0) {
-        return PUMP_DURATION_LOW;         // 120s
-    } else if (cachedMoisturePercent < (float)MOISTURE_THRESHOLD_LOW) {
-        return PUMP_DURATION_MODERATE;    // 60s
+    float threshold = (float)MOISTURE_THRESHOLD_LOW;
+    float tier1 = threshold * 0.33;   // ~1/3 of threshold → critical
+    float tier2 = threshold * 0.66;   // ~2/3 of threshold → low
+
+    if (cachedMoisturePercent <= tier1) {
+        return PUMP_DURATION_CRITICAL;    // 45s
+    } else if (cachedMoisturePercent <= tier2) {
+        return PUMP_DURATION_LOW;         // 30s
+    } else if (cachedMoisturePercent < threshold) {
+        return PUMP_DURATION_MODERATE;    // 15s
     }
     return 0;
 }
@@ -285,19 +310,22 @@ int calculateWateringDuration() {
 //  Heat Protection — Short Burst
 // ============================================================
 bool startHeatProtectionBurst() {
-    Serial.println("[RELAY] Heat protection burst requested.");
+    Serial.println("[MOSFET] Heat protection burst requested.");
     return startPump(PUMP_DURATION_HEAT_SHORT);
 }
 
 // ============================================================
-//  Internal Relay Control — LOW/HIGH Logic
+//  Internal MOSFET Control — Gate Drive Logic
+//  N-Channel MOSFET: HIGH = ON, LOW = OFF
 // ============================================================
-void relayOn() {
-    digitalWrite(RELAY_PIN, RELAY_ACTIVE_LOW ? LOW : HIGH);
+void mosfetOn() {
+    // N-Channel MOSFET: Drive gate HIGH to turn ON (conduct current)
+    digitalWrite(MOSFET_PIN, MOSFET_ACTIVE_HIGH ? HIGH : LOW);
 }
 
-void relayOff() {
-    digitalWrite(RELAY_PIN, RELAY_ACTIVE_LOW ? HIGH : LOW);
+void mosfetOff() {
+    // N-Channel MOSFET: Drive gate LOW to turn OFF (block current)
+    digitalWrite(MOSFET_PIN, MOSFET_ACTIVE_HIGH ? LOW : HIGH);
 }
 
 // ============================================================
@@ -337,5 +365,5 @@ int getPumpElapsedTime() {
 void resetPumpDailyCounters() {
     pumpTotalRunToday = 0;
     pumpCycleCount = 0;
-    Serial.println("[RELAY] Daily counters reset.");
+    Serial.println("[MOSFET] Daily counters reset.");
 }
