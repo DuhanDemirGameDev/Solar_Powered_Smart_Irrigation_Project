@@ -13,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,12 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class IrrigationController {
 
+    private static final int DEFAULT_IRRIGATION_DURATION_MINUTES = 15;
+
     private final IrrigationService irrigationService;
 
     @GetMapping("/command")
     public ResponseEntity<Map<String, Object>> getPumpCommand() {
         synchronized (IrrigationState.COMMAND_LOCK) {
-            if (hasPendingManualCommand()) {
+            if (hasPendingCommand()) {
                 Map<String, Object> command = buildCommandResponse(
                         IrrigationState.pendingAction,
                         IrrigationState.pendingDuration,
@@ -41,7 +43,11 @@ public class IrrigationController {
 
             if ("IRRIGATE".equals(decision)) {
                 IrrigationState.lastDecision = "IDLE";
-                return ResponseEntity.ok(buildCommandResponse("start", 15, "AI decision: IRRIGATE"));
+                return ResponseEntity.ok(buildCommandResponse(
+                        "start",
+                        DEFAULT_IRRIGATION_DURATION_MINUTES,
+                        "AI decision: IRRIGATE"
+                ));
             }
 
             if ("STOP".equals(decision)) {
@@ -79,6 +85,17 @@ public class IrrigationController {
         ));
     }
 
+    @PostMapping("/manual")
+    public ResponseEntity<Map<String, String>> triggerManualIrrigation() {
+        synchronized (IrrigationState.COMMAND_LOCK) {
+            IrrigationState.pendingAction = "start";
+            IrrigationState.pendingDuration = DEFAULT_IRRIGATION_DURATION_MINUTES;
+            IrrigationState.pendingReason = "Manual irrigation endpoint";
+        }
+
+        return ResponseEntity.ok(Map.of("message", "Manual irrigation command queued"));
+    }
+
     @PostMapping("/log")
     public ResponseEntity<IrrigationLogDto> logPumpAction(@Valid @RequestBody IrrigationLogDto irrigationLogDto) {
         IrrigationLogDto savedLog = irrigationService.logPumpAction(irrigationLogDto);
@@ -92,16 +109,8 @@ public class IrrigationController {
     ) {
         return ResponseEntity.ok(irrigationService.getIrrigationHistory(page, size));
     }
-<<<<<<< HEAD
-    @PostMapping("/manual")
-    public ResponseEntity<Map<String, String>> triggerManualIrrigation() {
-        // Sistemi kandırıp yapay zeka "SULA" demiş gibi yapıyoruz
-        IrrigationState.lastDecision = "IRRIGATE"; 
-        return ResponseEntity.ok(Map.of("message", "Manuel komut alindi!"));
-    }
-=======
 
-    private boolean hasPendingManualCommand() {
+    private boolean hasPendingCommand() {
         return !"none".equals(IrrigationState.pendingAction);
     }
 
@@ -142,7 +151,7 @@ public class IrrigationController {
             return 0;
         }
 
-        return duration == null || duration <= 0 ? 15 : duration;
+        return duration == null || duration <= 0 ? DEFAULT_IRRIGATION_DURATION_MINUTES : duration;
     }
 
     private String resolveReason(String reason, String action) {
@@ -152,6 +161,4 @@ public class IrrigationController {
 
         return "Manual override: " + action;
     }
-
->>>>>>> Duhan
 }

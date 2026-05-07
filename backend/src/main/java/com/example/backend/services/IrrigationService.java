@@ -6,6 +6,7 @@ import com.example.backend.repositories.IrrigationLogRepository;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class IrrigationService {
 
+    private static final String ALERT_EMAIL = "solarpower0606@gmail.com";
+
     private final IrrigationLogRepository irrigationLogRepository;
-    private final JavaMailSender mailSender;
+    private final ObjectProvider<JavaMailSender> mailSenderProvider;
 
     @Transactional
     public IrrigationLogDto logPumpAction(IrrigationLogDto irrigationLogDto) {
@@ -37,18 +40,21 @@ public class IrrigationService {
         return mapToDto(savedLog);
     }
 
-    // BURAYI PUBLIC YAPTIK - Controller artık burayı görebilir
     public void sendEmailNotification(int duration) {
+        JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
+        if (mailSender == null) {
+            return;
+        }
+
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("solarpower0606@gmail.com");
-            message.setTo("solarpower0606@gmail.com");
-            message.setSubject("🌱 Akıllı Sulama Sistemi Bildirimi");
-            message.setText("Sistem nemin düştüğünü fark etti! Pompa " + duration + " dakika boyunca çalıştırılacak.");
+            message.setFrom(ALERT_EMAIL);
+            message.setTo(ALERT_EMAIL);
+            message.setSubject("Smart Irrigation System Notification");
+            message.setText("The pump will run for " + duration + " minutes.");
             mailSender.send(message);
-            System.out.println("✅ Mail başarıyla gönderildi!");
         } catch (Exception e) {
-            System.err.println("❌ Mail gönderilirken hata oluştu: " + e.getMessage());
+            System.err.println("Mail error: " + e.getMessage());
         }
     }
 
