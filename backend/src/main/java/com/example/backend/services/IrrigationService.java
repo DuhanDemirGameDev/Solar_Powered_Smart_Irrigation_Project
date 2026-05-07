@@ -32,7 +32,7 @@ public class IrrigationService {
                 .timestamp(resolveTimestamp(irrigationLogDto.getTimestamp()))
                 .build();
 
-        if ("START".equalsIgnoreCase(irrigationLogDto.getPumpStatus())) {
+        if ("ON".equalsIgnoreCase(irrigationLogDto.getPumpStatus())) {
             sendEmailNotification(irrigationLogDto.getDurationInMinutes());
         }
 
@@ -40,7 +40,7 @@ public class IrrigationService {
         return mapToDto(savedLog);
     }
 
-    public void sendEmailNotification(int duration) {
+    public void sendEmailNotification(int durationSeconds) {
         JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
         if (mailSender == null) {
             return;
@@ -51,7 +51,7 @@ public class IrrigationService {
             message.setFrom(ALERT_EMAIL);
             message.setTo(ALERT_EMAIL);
             message.setSubject("Smart Irrigation System Notification");
-            message.setText("The pump will run for " + duration + " minutes.");
+            message.setText("The pump will run for " + durationSeconds + " seconds.");
             mailSender.send(message);
         } catch (Exception e) {
             System.err.println("Mail error: " + e.getMessage());

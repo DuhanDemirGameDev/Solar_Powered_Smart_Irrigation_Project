@@ -58,7 +58,33 @@ Main folders:
 backend       Spring Boot + Docker Compose for PostgreSQL
 ai-engine     Flask AI service and trained model
 frontend-web  Static HTML/JS dashboard
+embedded      ESP32 firmware and config.h
 ```
+
+### ESP32 Backend IP Configuration
+
+Before uploading the ESP32 firmware, edit `embedded/smart_plant_system/config.h`.
+
+Use the LAN IPv4 address of the computer running Spring Boot, not `localhost`, because `localhost` on the ESP32 means the ESP32 itself:
+
+```cpp
+#define BACKEND_HOST "192.168.1.X"
+#define BACKEND_PORT 8081
+```
+
+Find the computer IP on Windows:
+
+```powershell
+ipconfig
+```
+
+Use the IPv4 address for the WiFi adapter connected to the same network as the ESP32. Keep the placeholder generic in committed code and replace it only for your local upload.
+
+### Duration and Logging Units
+
+Pump command durations are standardized to **seconds** across Spring Boot, Flask-triggered decisions, frontend manual override, and ESP32 firmware.
+
+The irrigation log endpoint requires `pumpStatus` to be exactly `ON` or `OFF`. Lowercase values such as `on`, `off`, `start`, or `stop` are invalid. The current JSON field for the reported duration is still `durationInMinutes` for API compatibility, but the value represents the pump run duration in seconds.
 
 ## Part 2: Booting Up the System
 
@@ -317,6 +343,7 @@ If AI returned `IRRIGATE`:
 ```json
 {
   "duration": 15,
+  "unit": "seconds",
   "reason": "AI decision: IRRIGATE",
   "hasCommand": true,
   "action": "start"
@@ -328,6 +355,7 @@ If AI returned `WAIT`:
 ```json
 {
   "duration": 0,
+  "unit": "seconds",
   "reason": "AI decision: WAIT",
   "hasCommand": false,
   "action": "none"
@@ -339,6 +367,7 @@ If the AI service was offline:
 ```json
 {
   "duration": 0,
+  "unit": "seconds",
   "reason": "AI decision: AI_SERVICE_UNAVAILABLE",
   "hasCommand": false,
   "action": "none"
@@ -359,6 +388,7 @@ Expected second poll:
 ```json
 {
   "duration": 0,
+  "unit": "seconds",
   "reason": "AI decision: IDLE",
   "hasCommand": false,
   "action": "none"
@@ -369,7 +399,7 @@ This proves the infinite irrigation bug is fixed.
 
 ## Test 4: Manual Override Start Command
 
-Queue a manual `start` command:
+Queue a manual `start` command. The `duration` value is in seconds:
 
 ```powershell
 Invoke-RestMethod `
@@ -386,6 +416,7 @@ Expected:
 {
   "queued": true,
   "duration": 5,
+  "unit": "seconds",
   "reason": "Manual E2E test",
   "action": "start"
 }
@@ -403,6 +434,7 @@ Expected:
 ```json
 {
   "duration": 5,
+  "unit": "seconds",
   "reason": "Manual E2E test",
   "hasCommand": true,
   "action": "start"
@@ -421,6 +453,7 @@ Expected:
 ```json
 {
   "duration": 0,
+  "unit": "seconds",
   "hasCommand": false,
   "action": "none"
 }
@@ -428,7 +461,7 @@ Expected:
 
 ## Test 5: Manual Override Stop Command
 
-Queue a manual `stop` command:
+Queue a manual `stop` command. Stop commands always use `duration: 0` seconds:
 
 ```powershell
 Invoke-RestMethod `
@@ -451,6 +484,7 @@ Expected:
 ```json
 {
   "duration": 0,
+  "unit": "seconds",
   "reason": "Manual E2E stop test",
   "hasCommand": true,
   "action": "stop"
@@ -469,6 +503,7 @@ Expected:
 ```json
 {
   "duration": 0,
+  "unit": "seconds",
   "hasCommand": false,
   "action": "none"
 }
@@ -476,7 +511,7 @@ Expected:
 
 ## Test 6: Log Pump Action
 
-Simulate ESP32 reporting that the pump started:
+Simulate ESP32 reporting that the pump started. `pumpStatus` must be exactly `ON` or `OFF`; the duration value is interpreted as seconds:
 
 ```powershell
 Invoke-RestMethod `
@@ -498,7 +533,7 @@ Expected:
 
 - `content` contains the new irrigation log.
 - `pumpStatus` is `ON`.
-- `durationInMinutes` is `5`.
+- `durationInMinutes` is `5`, interpreted by the system as 5 seconds.
 
 ## Test 7: Verify PostgreSQL Tables
 
@@ -579,7 +614,19 @@ Invoke-RestMethod `
   -Body '{"moisture":20,"is_raining":false}' |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[3] Send sensor data to backend"
+Write-Host "`n[3] Flask malformed JSON robustness check"
+try {
+  Invoke-WebRequest `
+    -UseBasicParsing `
+    -Uri "http://127.0.0.1:5000/predict" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body '{bad json' | Select-Object StatusCode
+} catch {
+  $_.Exception.Response.StatusCode.value__
+}
+
+Write-Host "`n[4] Send sensor data to backend"
 $sensorBody = @{
   moisture_percent = 20
   moisture_raw = 820
@@ -591,15 +638,15 @@ $sensorBody = @{
 Invoke-RestMethod -Uri "$BASE/api/v1/sensors" -Method Post -ContentType "application/json" -Body $sensorBody |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[4] Poll command first time"
+Write-Host "`n[5] Poll command first time"
 Invoke-RestMethod -Uri "$BASE/api/v1/irrigation/command" -Method Get |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[5] Poll command second time"
+Write-Host "`n[6] Poll command second time"
 Invoke-RestMethod -Uri "$BASE/api/v1/irrigation/command" -Method Get |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[6] Queue manual start"
+Write-Host "`n[7] Queue manual start in seconds"
 Invoke-RestMethod `
   -Uri "$BASE/api/v1/irrigation/set-command" `
   -Method Post `
@@ -607,15 +654,15 @@ Invoke-RestMethod `
   -Body '{"action":"start","duration":5,"reason":"Smoke test manual start"}' |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[7] Manual start first poll"
+Write-Host "`n[8] Manual start first poll"
 Invoke-RestMethod -Uri "$BASE/api/v1/irrigation/command" -Method Get |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[8] Manual start second poll"
+Write-Host "`n[9] Manual start second poll"
 Invoke-RestMethod -Uri "$BASE/api/v1/irrigation/command" -Method Get |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[9] Log pump action"
+Write-Host "`n[10] Log pump ON action"
 Invoke-RestMethod `
   -Uri "$BASE/api/v1/irrigation/log" `
   -Method Post `
@@ -623,7 +670,7 @@ Invoke-RestMethod `
   -Body '{"pumpStatus":"ON","durationInMinutes":5}' |
   ConvertTo-Json -Depth 10
 
-Write-Host "`n[10] Read histories"
+Write-Host "`n[11] Read histories"
 Invoke-RestMethod -Uri "$BASE/api/v1/sensors/history?page=0&size=5" -Method Get |
   ConvertTo-Json -Depth 10
 Invoke-RestMethod -Uri "$BASE/api/v1/irrigation/history?page=0&size=5" -Method Get |

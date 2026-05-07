@@ -3,14 +3,18 @@ package com.example.backend.controller;
 import com.example.backend.domain.dto.SensorDataDto;
 import com.example.backend.services.SensorService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import java.time.Duration;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,15 +23,29 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+@Validated
 @RestController
-@RequiredArgsConstructor
 public class SensorController {
 
     private static final String ALERT_EMAIL = "solarpower0606@gmail.com";
+    private static final String AI_PREDICT_URL = "http://127.0.0.1:5000/predict";
 
     private final SensorService sensorService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    public SensorController(
+            SensorService sensorService,
+            ObjectProvider<JavaMailSender> mailSenderProvider,
+            RestTemplateBuilder restTemplateBuilder
+    ) {
+        this.sensorService = sensorService;
+        this.mailSenderProvider = mailSenderProvider;
+        this.restTemplate = restTemplateBuilder
+                .connectTimeout(Duration.ofSeconds(2))
+                .readTimeout(Duration.ofSeconds(3))
+                .build();
+    }
 
     @PostMapping({"/api/v1/sensors", "/api/sensor-data"})
     public ResponseEntity<SensorDataDto> createSensorData(@Valid @RequestBody SensorDataDto sensorDataDto) {
@@ -41,8 +59,8 @@ public class SensorController {
 
     @GetMapping({"/api/v1/sensors/history", "/api/sensor-data/history"})
     public ResponseEntity<Page<SensorDataDto>> getSensorHistory(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
         return ResponseEntity.ok(sensorService.getSensorHistory(page, size));
     }
@@ -68,24 +86,30 @@ public class SensorController {
     }
 
     private void updateAiDecision(SensorDataDto sensorDataDto) {
-        String pythonApiUrl = "http://127.0.0.1:5000/predict";
         Map<String, Object> pythonRequest = Map.of(
                 "moisture", sensorDataDto.getMoisturePercent(),
                 "is_raining", sensorDataDto.getIsRaining()
         );
 
+        String decision = "AI_SERVICE_UNAVAILABLE";
+
         try {
-            Map<?, ?> response = restTemplate.postForObject(pythonApiUrl, pythonRequest, Map.class);
+            Map<?, ?> response = restTemplate.postForObject(AI_PREDICT_URL, pythonRequest, Map.class);
             if (response != null && response.get("decision") != null) {
-                IrrigationState.lastDecision = response.get("decision").toString();
+                decision = response.get("decision").toString();
             }
         } catch (RestClientException ex) {
-            IrrigationState.lastDecision = "AI_SERVICE_UNAVAILABLE";
+            decision = "AI_SERVICE_UNAVAILABLE";
+        }
+
+        synchronized (IrrigationState.COMMAND_LOCK) {
+            IrrigationState.lastDecision = decision;
         }
     }
 
     private void sendPumpStartNotificationIfNeeded(SensorDataDto sensorDataDto) {
-        if (!"start".equalsIgnoreCase(sensorDataDto.getPumpState())) {
+        if (!"start".equalsIgnoreCase(sensorDataDto.getPumpState())
+                && !"on".equalsIgnoreCase(sensorDataDto.getPumpState())) {
             return;
         }
 
@@ -99,7 +123,7 @@ public class SensorController {
             message.setFrom(ALERT_EMAIL);
             message.setTo(ALERT_EMAIL);
             message.setSubject("Smart Irrigation Notification");
-            message.setText("Pump will run for " + sensorDataDto.getPumpRemainingTime() + " minutes.");
+            message.setText("Pump will run for " + sensorDataDto.getPumpRemainingTime() + " seconds.");
             mailSender.send(message);
         } catch (Exception e) {
             System.err.println("Mail error: " + e.getMessage());
