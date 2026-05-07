@@ -74,10 +74,10 @@ function renderLatestStatus(sensorHistory) {
 
     const latest = sensorHistory[0];
 
-    latestMoistureEl.textContent = `${formatNumber(latest.moisture_percent)}%`;
+    latestMoistureEl.textContent = `${formatNumber(readField(latest, "moisturePercent", "moisture_percent"))}%`;
     latestTimestampEl.textContent = `Last updated: ${formatDateTime(latest.timestamp)}`;
-    latestPumpStateEl.textContent = latest.pump_state || "Unknown";
-    latestRainStatusEl.textContent = latest.is_raining ? "Raining" : "Dry";
+    latestPumpStateEl.textContent = readField(latest, "pumpState", "pump_state") || "Unknown";
+    latestRainStatusEl.textContent = readField(latest, "isRaining", "is_raining") ? "Raining" : "Dry";
 }
 
 function renderMoistureChart(sensorHistory) {
@@ -88,7 +88,7 @@ function renderMoistureChart(sensorHistory) {
 
     const sortedHistory = [...sensorHistory].reverse();
     const labels = sortedHistory.map((entry) => formatChartLabel(entry.timestamp));
-    const moistureValues = sortedHistory.map((entry) => entry.moisture_percent);
+    const moistureValues = sortedHistory.map((entry) => readField(entry, "moisturePercent", "moisture_percent"));
     const ctx = document.getElementById("moistureChart");
 
     moistureChart = new Chart(ctx, {
@@ -214,6 +214,10 @@ function formatDuration(minutes) {
 
 function formatNumber(value) {
     return typeof value === "number" ? value.toFixed(1) : "--";
+}
+
+function readField(item, camelCaseName, snakeCaseName) {
+    return item[camelCaseName] ?? item[snakeCaseName];
 }
 
 function showError(element, message) {

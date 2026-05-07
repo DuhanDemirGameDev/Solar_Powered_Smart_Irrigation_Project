@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -43,6 +44,7 @@ public class SensorController {
             System.err.println("AI Servisine ulasilamadi: " + e.getMessage());
         }
 
+<<<<<<< HEAD
         // 3. SENİN GÖREVİN: MAİL FIRLATMA (Araya sessizce eklendi)
         if ("start".equalsIgnoreCase(sensorDataDto.getPumpState())) {
             try {
@@ -57,6 +59,20 @@ public class SensorController {
             } catch (Exception e) {
                 System.err.println("❌ Mail Hatasi: " + e.getMessage());
             }
+=======
+        try {
+            Map response = restTemplate.postForObject(
+                    pythonApiUrl,
+                    pythonRequest,
+                    Map.class
+            );
+
+            if (response != null && response.get("decision") != null) {
+                IrrigationState.lastDecision = response.get("decision").toString();
+            }
+        } catch (RestClientException ex) {
+            IrrigationState.lastDecision = "AI_SERVICE_UNAVAILABLE";
+>>>>>>> Duhan
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSensorData);

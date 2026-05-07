@@ -6,9 +6,9 @@ services:
     container_name: smart_irrigation_db
     restart: always
     environment:
-      POSTGRES_DB: smart_irrigation
+      POSTGRES_DB: smart_irrigation_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password123
+      POSTGRES_PASSWORD: 1234
     ports:
       - "5436:5432"
     volumes:

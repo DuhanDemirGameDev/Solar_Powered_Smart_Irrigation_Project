@@ -1,24 +1,24 @@
 [INFO] Scanning for projects...
-Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
 Downloading from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml
-Progress (1): 255 BProgress (2): 255 B | 249 BProgress (3): 255 B | 249 B | 234 BProgress (4): 255 B | 249 B | 234 B | 243 B                                           Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 560 B/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 527 B/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 573 B/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 546 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
+Progress (1): 243 BProgress (2): 243 B | 255 BProgress (3): 243 B | 255 B | 234 BProgress (4): 243 B | 255 B | 234 B | 249 B                                           Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 706 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 648 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 673 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
 Downloading from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml
 Downloading from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
+Progress (2): 249 B | 398 BProgress (3): 249 B | 398 B | 394 BProgress (4): 249 B | 398 B | 394 B | 375 B                                           Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (394 B at 11 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 11 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml
-Progress (1): 375 BProgress (2): 375 B | 242 BProgress (3): 375 B | 242 B | 394 BProgress (4): 375 B | 242 B | 394 B | 398 B                                           Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 11 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 6.9 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 11 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml
-Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (394 B at 11 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 628 B/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml
-Progress (1): 4.6 kBProgress (1): 9.7 kBProgress (1): 14 kB Progress (2): 14 kB | 3.1 kBProgress (2): 14 kB | 7.7 kBProgress (2): 14 kB | 12 kB Progress (2): 14 kB | 17 kBProgress (2): 14 kB | 20 kBProgress (2): 14 kB | 21 kB                           Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (14 kB at 408 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (21 kB at 299 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 8.8 kB/s)
+Progress (1): 242 BProgress (2): 242 B | 4.6 kBProgress (2): 242 B | 9.7 kBProgress (2): 242 B | 14 kB Progress (3): 242 B | 14 kB | 3.1 kBProgress (3): 242 B | 14 kB | 7.7 kBProgress (3): 242 B | 14 kB | 12 kB Progress (3): 242 B | 14 kB | 17 kBProgress (3): 242 B | 14 kB | 20 kBProgress (3): 242 B | 14 kB | 21 kB                                   Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 7.8 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (14 kB at 291 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (21 kB at 286 kB/s)
 [INFO] 
 [INFO] ------------------------< com.example:backend >-------------------------
 [INFO] Building  0.0.1-SNAPSHOT
@@ -44,10 +44,6 @@ Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/
 [INFO] 
 [INFO] 
 [INFO] --- spring-boot:3.5.13:run (default-cli) @ backend ---
-Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-buildpack-platform/3.5.13/spring-boot-buildpack-platform-3.5.13.jar
-Progress (1): 0.9/323 kBProgress (1): 2.3/323 kBProgress (1): 3.6/323 kBProgress (1): 5.0/323 kBProgress (1): 6.4/323 kBProgress (1): 7.7/323 kBProgress (1): 9.1/323 kBProgress (1): 10/323 kB Progress (1): 12/323 kBProgress (1): 13/323 kBProgress (1): 15/323 kBProgress (1): 16/323 kBProgress (1): 17/323 kBProgress (1): 19/323 kBProgress (1): 20/323 kBProgress (1): 21/323 kBProgress (1): 23/323 kBProgress (1): 24/323 kBProgress (1): 26/323 kBProgress (1): 27/323 kBProgress (1): 28/323 kBProgress (1): 30/323 kBProgress (1): 31/323 kBProgress (1): 32/323 kBProgress (1): 34/323 kBProgress (1): 35/323 kBProgress (1): 36/323 kBProgress (1): 38/323 kBProgress (1): 39/323 kBProgress (1): 41/323 kBProgress (1): 42/323 kBProgress (1): 43/323 kBProgress (1): 48/323 kBProgress (1): 52/323 kBProgress (1): 56/323 kBProgress (1): 57/323 kBProgress (1): 61/323 kBProgress (1): 65/323 kBProgress (1): 70/323 kBProgress (1): 74/323 kBProgress (1): 78/323 kBProgress (1): 82/323 kBProgress (1): 86/323 kBProgress (1): 91/323 kBProgress (1): 95/323 kBProgress (1): 99/323 kBProgress (1): 103/323 kBProgress (1): 108/323 kBProgress (1): 112/323 kBProgress (1): 116/323 kBProgress (1): 120/323 kBProgress (1): 125/323 kBProgress (1): 129/323 kBProgress (1): 133/323 kBProgress (1): 137/323 kBProgress (1): 141/323 kBProgress (1): 146/323 kBProgress (1): 150/323 kBProgress (1): 154/323 kBProgress (1): 158/323 kBProgress (1): 163/323 kBProgress (1): 167/323 kBProgress (1): 171/323 kBProgress (1): 175/323 kBProgress (1): 180/323 kBProgress (1): 184/323 kBProgress (1): 188/323 kBProgress (1): 192/323 kBProgress (1): 196/323 kBProgress (1): 201/323 kBProgress (1): 205/323 kBProgress (1): 209/323 kBProgress (1): 225/323 kBProgress (1): 242/323 kBProgress (1): 258/323 kBProgress (1): 275/323 kBProgress (1): 291/323 kBProgress (1): 307/323 kBProgress (1): 319/323 kBProgress (1): 323 kB                        Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-buildpack-platform/3.5.13/spring-boot-buildpack-platform-3.5.13.jar (323 kB at 1.5 MB/s)
-Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-loader-tools/3.5.13/spring-boot-loader-tools-3.5.13.jar
-Progress (1): 7.7/466 kBProgress (1): 8.2/466 kBProgress (1): 25/466 kB Progress (1): 33/466 kBProgress (1): 49/466 kBProgress (1): 66/466 kBProgress (1): 82/466 kBProgress (1): 90/466 kBProgress (1): 106/466 kBProgress (1): 123/466 kBProgress (1): 131/466 kBProgress (1): 147/466 kBProgress (1): 164/466 kBProgress (1): 180/466 kBProgress (1): 197/466 kBProgress (1): 213/466 kBProgress (1): 229/466 kBProgress (1): 246/466 kBProgress (1): 262/466 kBProgress (1): 279/466 kBProgress (1): 295/466 kBProgress (1): 311/466 kBProgress (1): 328/466 kBProgress (1): 344/466 kBProgress (1): 360/466 kBProgress (1): 377/466 kBProgress (1): 393/466 kBProgress (1): 410/466 kBProgress (1): 426/466 kBProgress (1): 442/466 kBProgress (1): 459/466 kBProgress (1): 466 kB                        Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-loader-tools/3.5.13/spring-boot-loader-tools-3.5.13.jar (466 kB at 2.5 MB/s)
 [INFO] Attaching agents: []
 
   .   ____          _            __ _ _
@@ -59,36 +55,36 @@ Progress (1): 7.7/466 kBProgress (1): 8.2/466 kBProgress (1): 25/466 kB Progr
 
  :: Spring Boot ::               (v3.5.13)
 
-2026-04-22T12:03:45.179+03:00  INFO 21856 --- [backend] [           main] com.example.backend.BackendApplication   : Starting BackendApplication using Java 21.0.9 with PID 21856 (C:\Users\Duhan Demir\Desktop\Derslerde Kullanmak Amaçlı\3. Sınıf\2. Dönem\Microprocessors\Proje\Solar_Powered_Smart_Irrigation_Project\backend\target\classes started by Duhan Demir in C:\Users\Duhan Demir\Desktop\Derslerde Kullanmak Amaçlı\3. Sınıf\2. Dönem\Microprocessors\Proje\Solar_Powered_Smart_Irrigation_Project\backend)
-2026-04-22T12:03:45.181+03:00  INFO 21856 --- [backend] [           main] com.example.backend.BackendApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-04-22T12:03:45.182+03:00 DEBUG 21856 --- [backend] [           main] o.s.boot.SpringApplication               : Loading source class com.example.backend.BackendApplication
-2026-04-22T12:03:45.218+03:00 DEBUG 21856 --- [backend] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@766653e6
-2026-04-22T12:03:45.766+03:00  INFO 21856 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-04-22T12:03:45.780+03:00 DEBUG 21856 --- [backend] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.example.backend'. Automatic @Repository and @Entity scanning is enabled.
-2026-04-22T12:03:45.815+03:00  INFO 21856 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 2 JPA repository interfaces.
-2026-04-22T12:03:46.199+03:00 DEBUG 21856 --- [backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Duhan Demir\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
-2026-04-22T12:03:46.200+03:00 DEBUG 21856 --- [backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Duhan Demir\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
-2026-04-22T12:03:46.200+03:00 DEBUG 21856 --- [backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
-2026-04-22T12:03:46.224+03:00  INFO 21856 --- [backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-04-22T12:03:46.236+03:00  INFO 21856 --- [backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-04-22T12:03:46.236+03:00  INFO 21856 --- [backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.53]
-2026-04-22T12:03:46.291+03:00  INFO 21856 --- [backend] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-04-22T12:03:46.292+03:00 DEBUG 21856 --- [backend] [           main] w.s.c.ServletWebServerApplicationContext : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
-2026-04-22T12:03:46.293+03:00  INFO 21856 --- [backend] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1074 ms
-2026-04-22T12:03:46.304+03:00 DEBUG 21856 --- [backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
-2026-04-22T12:03:46.305+03:00 DEBUG 21856 --- [backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
-2026-04-22T12:03:46.323+03:00 DEBUG 21856 --- [backend] [           main] o.s.b.w.s.f.OrderedRequestContextFilter  : Filter 'requestContextFilter' configured for use
-2026-04-22T12:03:46.324+03:00 DEBUG 21856 --- [backend] [           main] s.b.w.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
-2026-04-22T12:03:46.325+03:00 DEBUG 21856 --- [backend] [           main] o.s.b.w.s.f.OrderedFormContentFilter     : Filter 'formContentFilter' configured for use
-2026-04-22T12:03:46.424+03:00  INFO 21856 --- [backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-04-22T12:03:46.465+03:00  INFO 21856 --- [backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.45.Final
-2026-04-22T12:03:46.494+03:00  INFO 21856 --- [backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-04-22T12:03:46.705+03:00  INFO 21856 --- [backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-04-22T12:03:46.729+03:00  INFO 21856 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-04-22T12:03:46.869+03:00  INFO 21856 --- [backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1aac0a47
-2026-04-22T12:03:46.870+03:00  INFO 21856 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-04-22T12:03:46.898+03:00  WARN 21856 --- [backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-04-22T12:03:46.915+03:00  INFO 21856 --- [backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-05-06T14:12:05.280+03:00  INFO 1696 --- [backend] [           main] com.example.backend.BackendApplication   : Starting BackendApplication using Java 21.0.9 with PID 1696 (C:\Users\Duhan Demir\Desktop\Derslerde Kullanmak Amaçlı\3. Sınıf\2. Dönem\Microprocessors\Proje\Solar_Powered_Smart_Irrigation_Project\backend\target\classes started by Duhan Demir in C:\Users\Duhan Demir\Desktop\Derslerde Kullanmak Amaçlı\3. Sınıf\2. Dönem\Microprocessors\Proje\Solar_Powered_Smart_Irrigation_Project\backend)
+2026-05-06T14:12:05.280+03:00  INFO 1696 --- [backend] [           main] com.example.backend.BackendApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-05-06T14:12:05.280+03:00 DEBUG 1696 --- [backend] [           main] o.s.boot.SpringApplication               : Loading source class com.example.backend.BackendApplication
+2026-05-06T14:12:05.322+03:00 DEBUG 1696 --- [backend] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@3b79fd76
+2026-05-06T14:12:05.920+03:00  INFO 1696 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-06T14:12:05.944+03:00 DEBUG 1696 --- [backend] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.example.backend'. Automatic @Repository and @Entity scanning is enabled.
+2026-05-06T14:12:05.982+03:00  INFO 1696 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 46 ms. Found 3 JPA repository interfaces.
+2026-05-06T14:12:06.370+03:00 DEBUG 1696 --- [backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Duhan Demir\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
+2026-05-06T14:12:06.371+03:00 DEBUG 1696 --- [backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Duhan Demir\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
+2026-05-06T14:12:06.371+03:00 DEBUG 1696 --- [backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
+2026-05-06T14:12:06.393+03:00  INFO 1696 --- [backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-05-06T14:12:06.405+03:00  INFO 1696 --- [backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-06T14:12:06.405+03:00  INFO 1696 --- [backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.53]
+2026-05-06T14:12:06.461+03:00  INFO 1696 --- [backend] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-06T14:12:06.461+03:00 DEBUG 1696 --- [backend] [           main] w.s.c.ServletWebServerApplicationContext : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
+2026-05-06T14:12:06.461+03:00  INFO 1696 --- [backend] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1139 ms
+2026-05-06T14:12:06.474+03:00 DEBUG 1696 --- [backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
+2026-05-06T14:12:06.474+03:00 DEBUG 1696 --- [backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
+2026-05-06T14:12:06.493+03:00 DEBUG 1696 --- [backend] [           main] o.s.b.w.s.f.OrderedRequestContextFilter  : Filter 'requestContextFilter' configured for use
+2026-05-06T14:12:06.493+03:00 DEBUG 1696 --- [backend] [           main] s.b.w.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
+2026-05-06T14:12:06.493+03:00 DEBUG 1696 --- [backend] [           main] o.s.b.w.s.f.OrderedFormContentFilter     : Filter 'formContentFilter' configured for use
+2026-05-06T14:12:06.597+03:00  INFO 1696 --- [backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-06T14:12:06.638+03:00  INFO 1696 --- [backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.45.Final
+2026-05-06T14:12:06.666+03:00  INFO 1696 --- [backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-06T14:12:06.889+03:00  INFO 1696 --- [backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-06T14:12:06.910+03:00  INFO 1696 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-06T14:12:07.090+03:00  INFO 1696 --- [backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5f5c187d
+2026-05-06T14:12:07.091+03:00  INFO 1696 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-06T14:12:07.127+03:00  WARN 1696 --- [backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-06T14:12:07.149+03:00  INFO 1696 --- [backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 15.16
@@ -96,8 +92,8 @@ Progress (1): 7.7/466 kBProgress (1): 8.2/466 kBProgress (1): 25/466 kB Progr
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-04-22T12:03:47.709+03:00  INFO 21856 --- [backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-04-22T12:03:47.772+03:00 DEBUG 21856 --- [backend] [           main] org.hibernate.SQL                        : 
+2026-05-06T14:12:07.811+03:00  INFO 1696 --- [backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-06T14:12:07.893+03:00 DEBUG 1696 --- [backend] [           main] org.hibernate.SQL                        : 
     create table irrigation_log (
         id bigint generated by default as identity,
         duration_in_minutes integer not null,
@@ -113,11 +109,31 @@ Hibernate:
         timestamp timestamp(6) not null,
         primary key (id)
     )
-2026-04-22T12:03:47.792+03:00 DEBUG 21856 --- [backend] [           main] org.hibernate.SQL                        : 
+2026-05-06T14:12:07.910+03:00 DEBUG 1696 --- [backend] [           main] org.hibernate.SQL                        : 
+    create table notification_log (
+        id bigint generated by default as identity,
+        message varchar(255) not null,
+        timestamp timestamp(6) not null,
+        type varchar(50) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table notification_log (
+        id bigint generated by default as identity,
+        message varchar(255) not null,
+        timestamp timestamp(6) not null,
+        type varchar(50) not null,
+        primary key (id)
+    )
+2026-05-06T14:12:07.918+03:00 DEBUG 1696 --- [backend] [           main] org.hibernate.SQL                        : 
     create table sensor_data (
         id bigint generated by default as identity,
         is_raining boolean not null,
-        soil_moisture_level float(53) not null,
+        moisture_percent float(53) not null,
+        moisture_raw integer not null,
+        pump_remaining_time integer not null,
+        pump_state varchar(32) not null,
+        rain_sensor_raw integer not null,
         timestamp timestamp(6) not null,
         primary key (id)
     )
@@ -125,17 +141,21 @@ Hibernate:
     create table sensor_data (
         id bigint generated by default as identity,
         is_raining boolean not null,
-        soil_moisture_level float(53) not null,
+        moisture_percent float(53) not null,
+        moisture_raw integer not null,
+        pump_remaining_time integer not null,
+        pump_state varchar(32) not null,
+        rain_sensor_raw integer not null,
         timestamp timestamp(6) not null,
         primary key (id)
     )
-2026-04-22T12:03:47.800+03:00  INFO 21856 --- [backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-04-22T12:03:48.205+03:00 DEBUG 21856 --- [backend] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 10 mappings in 'requestMappingHandlerMapping'
-2026-04-22T12:03:48.269+03:00 DEBUG 21856 --- [backend] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
-2026-04-22T12:03:48.291+03:00 DEBUG 21856 --- [backend] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2026-04-22T12:03:48.327+03:00 DEBUG 21856 --- [backend] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-04-22T12:03:48.457+03:00  INFO 21856 --- [backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-2026-04-22T12:03:48.467+03:00 DEBUG 21856 --- [backend] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+2026-05-06T14:12:07.928+03:00  INFO 1696 --- [backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-06T14:12:08.327+03:00 DEBUG 1696 --- [backend] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 11 mappings in 'requestMappingHandlerMapping'
+2026-05-06T14:12:08.399+03:00 DEBUG 1696 --- [backend] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-05-06T14:12:08.422+03:00 DEBUG 1696 --- [backend] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-05-06T14:12:08.452+03:00 DEBUG 1696 --- [backend] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-05-06T14:12:08.591+03:00  INFO 1696 --- [backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2026-05-06T14:12:08.597+03:00 DEBUG 1696 --- [backend] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
 
 
 ============================
@@ -1049,11 +1069,13 @@ Negative matches:
 
    MailSenderAutoConfiguration:
       Did not match:
-         - @ConditionalOnClass did not find required class 'jakarta.mail.internet.MimeMessage' (OnClassCondition)
+         - AnyNestedCondition 0 matched 2 did not; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.JndiNameProperty @ConditionalOnProperty (spring.mail.jndi-name) did not find property 'spring.mail.jndi-name'; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.HostProperty @ConditionalOnProperty (spring.mail.host) did not find property 'spring.mail.host' (MailSenderAutoConfiguration.MailSenderCondition)
+      Matched:
+         - @ConditionalOnClass found required classes 'jakarta.mail.internet.MimeMessage', 'jakarta.activation.MimeType', 'org.springframework.mail.MailSender' (OnClassCondition)
 
    MailSenderValidatorAutoConfiguration:
       Did not match:
-         - @ConditionalOnSingleCandidate did not find required type 'org.springframework.mail.javamail.JavaMailSenderImpl' (OnBeanCondition)
+         - @ConditionalOnBooleanProperty (spring.mail.test-connection=true) did not find property 'spring.mail.test-connection' (OnPropertyCondition)
 
    MessageSourceAutoConfiguration:
       Did not match:
@@ -1521,6 +1543,81 @@ Unconditional classes:
 
 
 
-2026-04-22T12:03:48.469+03:00  INFO 21856 --- [backend] [           main] com.example.backend.BackendApplication   : Started BackendApplication in 3.647 seconds (process running for 3.97)
-2026-04-22T12:03:48.470+03:00 DEBUG 21856 --- [backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
-2026-04-22T12:03:48.472+03:00 DEBUG 21856 --- [backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+2026-05-06T14:12:08.603+03:00  INFO 1696 --- [backend] [           main] com.example.backend.BackendApplication   : Started BackendApplication in 3.7 seconds (process running for 4.006)
+2026-05-06T14:12:08.605+03:00 DEBUG 1696 --- [backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
+2026-05-06T14:12:08.605+03:00 DEBUG 1696 --- [backend] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+2026-05-06T14:12:35.944+03:00  INFO 1696 --- [backend] [nio-8081-exec-4] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-06T14:12:35.944+03:00  INFO 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-06T14:12:35.945+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2026-05-06T14:12:35.945+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2026-05-06T14:12:35.945+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2026-05-06T14:12:35.946+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@49bc1f6c
+2026-05-06T14:12:35.946+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@9c40f43
+2026-05-06T14:12:35.947+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-05-06T14:12:35.947+03:00  INFO 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-05-06T14:12:35.958+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui.html", parameters={}
+2026-05-06T14:12:35.958+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/sensors/history", parameters={}
+2026-05-06T14:12:35.968+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc#redirectToUi(HttpServletRequest)
+2026-05-06T14:12:35.968+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.backend.controller.SensorController#getSensorHistory(int, int)
+2026-05-06T14:12:36.039+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-05-06T14:12:36.040+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+2026-05-06T14:12:36.042+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 302 FOUND
+2026-05-06T14:12:36.046+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.html", parameters={}
+2026-05-06T14:12:36.050+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-05-06T14:12:36.055+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-05-06T14:12:36.186+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-1] org.hibernate.SQL                        : 
+    select
+        sd1_0.id,
+        sd1_0.is_raining,
+        sd1_0.moisture_percent,
+        sd1_0.moisture_raw,
+        sd1_0.pump_remaining_time,
+        sd1_0.pump_state,
+        sd1_0.rain_sensor_raw,
+        sd1_0.timestamp 
+    from
+        sensor_data sd1_0 
+    order by
+        sd1_0.timestamp desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        sd1_0.id,
+        sd1_0.is_raining,
+        sd1_0.moisture_percent,
+        sd1_0.moisture_raw,
+        sd1_0.pump_remaining_time,
+        sd1_0.pump_state,
+        sd1_0.rain_sensor_raw,
+        sd1_0.timestamp 
+    from
+        sensor_data sd1_0 
+    order by
+        sd1_0.timestamp desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+2026-05-06T14:12:36.235+03:00  WARN 1696 --- [backend] [nio-8081-exec-1] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2026-05-06T14:12:36.246+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-05-06T14:12:36.246+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [Page 1 of 0 containing UNKNOWN instances]
+2026-05-06T14:12:36.271+03:00 DEBUG 1696 --- [backend] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  07:58 min
+[INFO] Finished at: 2026-05-06T14:20:00+03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.13:run (default-cli) on project backend: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
