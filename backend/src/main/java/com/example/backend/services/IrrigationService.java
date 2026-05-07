@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class IrrigationService {
 
     private final IrrigationLogRepository irrigationLogRepository;
+    private final JavaMailSender mailSender;
 
     @Transactional
     public IrrigationLogDto logPumpAction(IrrigationLogDto irrigationLogDto) {
@@ -26,8 +29,27 @@ public class IrrigationService {
                 .timestamp(resolveTimestamp(irrigationLogDto.getTimestamp()))
                 .build();
 
+        if ("START".equalsIgnoreCase(irrigationLogDto.getPumpStatus())) {
+            sendEmailNotification(irrigationLogDto.getDurationInMinutes());
+        }
+
         IrrigationLog savedLog = irrigationLogRepository.save(irrigationLog);
         return mapToDto(savedLog);
+    }
+
+    // BURAYI PUBLIC YAPTIK - Controller artık burayı görebilir
+    public void sendEmailNotification(int duration) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("solarpower0606@gmail.com");
+            message.setTo("solarpower0606@gmail.com");
+            message.setSubject("🌱 Akıllı Sulama Sistemi Bildirimi");
+            message.setText("Sistem nemin düştüğünü fark etti! Pompa " + duration + " dakika boyunca çalıştırılacak.");
+            mailSender.send(message);
+            System.out.println("✅ Mail başarıyla gönderildi!");
+        } catch (Exception e) {
+            System.err.println("❌ Mail gönderilirken hata oluştu: " + e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)

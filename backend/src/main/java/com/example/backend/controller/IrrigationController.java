@@ -57,5 +57,10 @@ public class IrrigationController {
     ) {
         return ResponseEntity.ok(irrigationService.getIrrigationHistory(page, size));
     }
-
+    @PostMapping("/manual")
+    public ResponseEntity<Map<String, String>> triggerManualIrrigation() {
+        // Sistemi kandırıp yapay zeka "SULA" demiş gibi yapıyoruz
+        IrrigationState.lastDecision = "IRRIGATE"; 
+        return ResponseEntity.ok(Map.of("message", "Manuel komut alindi!"));
+    }
 }
