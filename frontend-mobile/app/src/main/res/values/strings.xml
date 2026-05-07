@@ -2,5 +2,6 @@
     <string name="app_name">SmartIrrigationMobile</string>
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_control">Control</string>
+    <string name="nav_weather">Weather</string>
     <string name="nav_history">History</string>
 </resources>

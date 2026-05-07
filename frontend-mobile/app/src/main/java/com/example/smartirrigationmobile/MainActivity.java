@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.example.smartirrigationmobile.fragment.ControlFragment;
 import com.example.smartirrigationmobile.fragment.DashboardFragment;
 import com.example.smartirrigationmobile.fragment.HistoryFragment;
+import com.example.smartirrigationmobile.fragment.WeatherFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.nav_control) {
                 openFragment(new ControlFragment());
+                return true;
+            } else if (itemId == R.id.nav_weather) {
+                openFragment(new WeatherFragment());
                 return true;
             } else if (itemId == R.id.nav_history) {
                 openFragment(new HistoryFragment());

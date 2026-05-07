@@ -12,6 +12,11 @@
         android:title="@string/nav_control" />
 
     <item
+        android:id="@+id/nav_weather"
+        android:icon="@drawable/ic_cloud_rain"
+        android:title="@string/nav_weather" />
+
+    <item
         android:id="@+id/nav_history"
         android:icon="@drawable/ic_history"
         android:title="@string/nav_history" />
