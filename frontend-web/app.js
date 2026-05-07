@@ -2,7 +2,9 @@ const API_BASE_URL = "http://localhost:8081";
 const SENSOR_HISTORY_URL = `${API_BASE_URL}/api/v1/sensors/history?page=0&size=20`;
 const IRRIGATION_HISTORY_URL = `${API_BASE_URL}/api/v1/irrigation/history?page=0&size=20`;
 const MANUAL_PUMP_URL = `${API_BASE_URL}/api/v1/irrigation/set-command`;
+const AI_PREDICT_URL = "http://127.0.0.1:5000/predict";
 const POLL_INTERVAL_MS = 10000;
+const AI_REQUEST_TIMEOUT_MS = 4500;
 
 const elements = {
     latestMoisture: document.getElementById("latestMoisture"),
@@ -23,7 +25,14 @@ const elements = {
     irrigationTableBody: document.getElementById("irrigationTableBody"),
     manualPumpBtn: document.getElementById("manualPumpBtn"),
     toastRegion: document.getElementById("toastRegion"),
-    moistureChartCanvas: document.getElementById("moistureChart")
+    moistureChartCanvas: document.getElementById("moistureChart"),
+    aiSyncPill: document.getElementById("aiSyncPill"),
+    aiDecision: document.getElementById("aiDecision"),
+    aiDecisionCopy: document.getElementById("aiDecisionCopy"),
+    weatherTemperature: document.getElementById("weatherTemperature"),
+    weatherHumidity: document.getElementById("weatherHumidity"),
+    weatherRainProb: document.getElementById("weatherRainProb"),
+    aiPayloadText: document.getElementById("aiPayloadText")
 };
 
 let moistureChart = null;
@@ -65,6 +74,7 @@ async function refreshDashboard(options = {}) {
         renderMoistureChart(sensorHistory);
         renderIrrigationTable(irrigationLogs);
         renderSummaryCards(sensorHistory, irrigationLogs);
+        await refreshWeatherIntelligence(sensorHistory[0]);
         setConnectionState("live");
         hideInlineAlert(elements.chartAlert);
         hideInlineAlert(elements.logAlert);
@@ -77,6 +87,81 @@ async function refreshDashboard(options = {}) {
     } finally {
         isRefreshing = false;
     }
+}
+
+async function refreshWeatherIntelligence(latestSensorReading) {
+    const payload = buildPredictionPayload(latestSensorReading);
+    elements.aiPayloadText.textContent = `moisture: ${formatNumber(payload.moisture)}, is_raining: ${payload.is_raining}`;
+    setAiState("loading");
+
+    try {
+        const prediction = await fetchAiPrediction(payload);
+        renderWeatherIntelligence(prediction);
+        setAiState("live");
+    } catch (error) {
+        console.error("Weather AI refresh failed:", error);
+        setAiState("error");
+        renderWeatherFallback();
+    }
+}
+
+async function fetchAiPrediction(payload) {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), AI_REQUEST_TIMEOUT_MS);
+
+    const response = await fetch(AI_PREDICT_URL, {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+        },
+        body: JSON.stringify(payload)
+    }).finally(() => window.clearTimeout(timeoutId));
+
+    if (!response.ok) {
+        throw new Error(`POST ${AI_PREDICT_URL} failed with HTTP ${response.status}`);
+    }
+
+    return response.json();
+}
+
+function buildPredictionPayload(latestSensorReading) {
+    if (!latestSensorReading) {
+        return {
+            moisture: 50,
+            is_raining: false
+        };
+    }
+
+    const moisture = Number(readField(latestSensorReading, "moisturePercent", "moisture_percent"));
+    const isRaining = normalizeBoolean(readField(latestSensorReading, "isRaining", "is_raining"));
+
+    return {
+        moisture: Number.isFinite(moisture) ? moisture : 50,
+        is_raining: isRaining
+    };
+}
+
+function renderWeatherIntelligence(prediction) {
+    const decision = String(prediction.decision || "--").toUpperCase();
+    const temperature = readField(prediction, "temperature", "temperature");
+    const humidity = readField(prediction, "humidity", "humidity");
+    const rainProb = readField(prediction, "rainProb", "rain_prob");
+
+    elements.aiDecision.textContent = decision;
+    elements.weatherTemperature.textContent = formatNumber(temperature);
+    elements.weatherHumidity.textContent = formatNumber(humidity);
+    elements.weatherRainProb.textContent = formatNumber(rainProb);
+    elements.aiDecisionCopy.textContent = getDecisionCopy(decision);
+}
+
+function renderWeatherFallback() {
+    elements.aiDecision.textContent = "--";
+    elements.weatherTemperature.textContent = "--";
+    elements.weatherHumidity.textContent = "--";
+    elements.weatherRainProb.textContent = "--";
+    elements.aiDecisionCopy.textContent = "Prediction service is unavailable. Start the Flask API on 127.0.0.1:5000 to restore AI guidance.";
 }
 
 async function fetchPageContent(url) {
@@ -305,6 +390,36 @@ async function handleManualPumpClick() {
     }
 }
 
+function setAiState(state) {
+    elements.aiSyncPill.classList.toggle("error", state === "error");
+
+    if (state === "loading") {
+        elements.aiSyncPill.textContent = "AI syncing";
+        return;
+    }
+
+    if (state === "error") {
+        elements.aiSyncPill.textContent = "AI offline";
+        return;
+    }
+
+    elements.aiSyncPill.textContent = "AI live";
+}
+
+function getDecisionCopy(decision) {
+    const normalized = String(decision).toUpperCase();
+
+    if (normalized.includes("IRRIGATE") || normalized.includes("WATER") || normalized === "ON") {
+        return "Soil and weather signals support irrigation in the current window.";
+    }
+
+    if (normalized.includes("POSTPONE") || normalized.includes("WAIT") || normalized.includes("OFF")) {
+        return "Weather or moisture conditions suggest delaying irrigation.";
+    }
+
+    return "Latest model output is ready for operator review.";
+}
+
 function setConnectionState(state) {
     elements.connectionBadge.classList.toggle("error", state === "error");
 
@@ -392,6 +507,14 @@ function normalizePumpState(value) {
     return normalized;
 }
 
+function normalizeBoolean(value) {
+    if (typeof value === "string") {
+        return ["true", "1", "yes", "y", "on", "raining"].includes(value.trim().toLowerCase());
+    }
+
+    return Boolean(value);
+}
+
 function formatDateTime(timestamp) {
     if (!timestamp) {
         return "N/A";
@@ -425,7 +548,8 @@ function formatDuration(minutes) {
 }
 
 function formatNumber(value) {
-    return typeof value === "number" ? value.toFixed(1) : "--";
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toFixed(1) : "--";
 }
 
 function readField(item, camelCaseName, snakeCaseName) {
