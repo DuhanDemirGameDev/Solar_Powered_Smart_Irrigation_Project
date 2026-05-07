@@ -20,6 +20,10 @@ public interface ApiService {
             @Query("size") int size
     );
 
+    default Call<PageResponse<SensorData>> getLatestSensorData() {
+        return getSensorHistory(0, 1);
+    }
+
     @POST("api/v1/irrigation/set-command")
     Call<ManualCommandResponse> setPumpCommand(@Body PumpCommandRequest request);
 
