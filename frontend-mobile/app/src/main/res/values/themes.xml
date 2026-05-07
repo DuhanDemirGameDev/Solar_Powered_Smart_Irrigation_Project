@@ -1,8 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.SmartIrrigationMobile" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:colorAccent">@color/irrigation_solar</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:navigationBarColor">@color/irrigation_surface</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:statusBarColor">@color/irrigation_background</item>
+        <item name="colorPrimary">@color/irrigation_green</item>
+        <item name="colorPrimaryContainer">@color/irrigation_green_soft</item>
+        <item name="colorSecondary">@color/irrigation_solar</item>
+        <item name="colorTertiary">@color/irrigation_water</item>
+        <item name="android:windowBackground">@color/irrigation_background</item>
     </style>
 
     <style name="Theme.SmartIrrigationMobile" parent="Base.Theme.SmartIrrigationMobile" />

@@ -8,65 +8,93 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="22dp"
+        android:paddingTop="28dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="34dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Pump Control"
             android:textColor="@color/irrigation_text"
-            android:textSize="28sp"
+            android:textSize="31sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Manual override commands"
+            android:layout_marginTop="6dp"
+            android:text="Manual override for fast irrigation response"
             android:textColor="@color/irrigation_muted"
-            android:textSize="15sp" />
+            android:textSize="16sp" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="42dp"
             app:cardBackgroundColor="@color/irrigation_surface"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp"
-            app:strokeColor="#D9E3DD"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:contentPadding="18dp"
+            app:strokeColor="@color/irrigation_hairline"
             app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:orientation="vertical">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_start_pump"
                     android:layout_width="match_parent"
-                    android:layout_height="72dp"
+                    android:layout_height="92dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     android:text="START PUMP (15s)"
-                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:textSize="19sp"
                     android:textStyle="bold"
                     app:backgroundTint="@color/irrigation_green"
-                    app:cornerRadius="8dp" />
+                    app:cornerRadius="24dp"
+                    app:icon="@drawable/ic_play_water"
+                    app:iconGravity="textStart"
+                    app:iconPadding="12dp"
+                    app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_stop_pump"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="72dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="82dp"
+                    android:layout_marginTop="18dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     android:text="STOP PUMP"
+                    android:textColor="@color/irrigation_danger"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:backgroundTint="@color/irrigation_danger"
-                    app:cornerRadius="8dp" />
-
+                    app:backgroundTint="@color/irrigation_danger_soft"
+                    app:cornerRadius="24dp"
+                    app:icon="@drawable/ic_stop"
+                    app:iconGravity="textStart"
+                    app:iconPadding="12dp"
+                    app:iconTint="@color/irrigation_danger"
+                    app:strokeColor="@color/irrigation_danger"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center"
+            android:text="Commands are queued instantly through the local backend"
+            android:textColor="@color/irrigation_muted"
+            android:textSize="13sp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

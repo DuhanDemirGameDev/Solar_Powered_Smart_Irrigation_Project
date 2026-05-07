@@ -2,14 +2,28 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="irrigation_background">#F5F8F6</color>
+
+    <color name="irrigation_background">#F4F7F6</color>
     <color name="irrigation_surface">#FFFFFFFF</color>
-    <color name="irrigation_green">#2E7D32</color>
-    <color name="irrigation_green_dark">#1B5E20</color>
-    <color name="irrigation_green_soft">#E4F3E7</color>
-    <color name="irrigation_blue">#1976D2</color>
-    <color name="irrigation_blue_soft">#E5F1FD</color>
-    <color name="irrigation_text">#18251C</color>
-    <color name="irrigation_muted">#66756B</color>
-    <color name="irrigation_danger">#C62828</color>
+    <color name="irrigation_surface_warm">#FFFCF4</color>
+    <color name="irrigation_card_shadow">#1A0C2416</color>
+
+    <color name="irrigation_green">#0F5E3B</color>
+    <color name="irrigation_green_dark">#073B25</color>
+    <color name="irrigation_green_soft">#E6F3EC</color>
+    <color name="irrigation_mint">#DDF7EA</color>
+
+    <color name="irrigation_blue">#1E88E5</color>
+    <color name="irrigation_blue_dark">#0A4F8F</color>
+    <color name="irrigation_blue_soft">#E6F3FF</color>
+    <color name="irrigation_water">#2FB8FF</color>
+
+    <color name="irrigation_solar">#FFC928</color>
+    <color name="irrigation_solar_soft">#FFF4C7</color>
+    <color name="irrigation_danger">#D84242</color>
+    <color name="irrigation_danger_soft">#FFEAEA</color>
+
+    <color name="irrigation_text">#102118</color>
+    <color name="irrigation_muted">#6E7B73</color>
+    <color name="irrigation_hairline">#DDE7E1</color>
 </resources>

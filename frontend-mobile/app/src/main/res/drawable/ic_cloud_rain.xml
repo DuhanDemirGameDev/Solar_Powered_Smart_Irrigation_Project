@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/irrigation_blue"
+        android:pathData="M19,10.04C18.32,6.59 15.29,4 11.65,4C8.75,4 6.24,5.64 4.98,8.04C2.18,8.33 0,10.7 0,13.57C0,16.64 2.49,19.13 5.56,19.13H18.65C21.6,19.13 24,16.74 24,13.78C24,10.95 21.8,8.65 19,10.04ZM18.65,17.13H5.56C3.59,17.13 2,15.54 2,13.57C2,11.74 3.37,10.22 5.19,10.03L6.25,9.92L6.75,8.98C7.72,7.14 9.6,6 11.65,6C14.27,6 16.58,7.86 17.14,10.42L17.43,11.78L18.79,12.05C20.65,12.42 22,14 22,13.78C22,15.63 20.5,17.13 18.65,17.13Z" />
+    <path
+        android:fillColor="@color/irrigation_water"
+        android:pathData="M7,21L9,21L10,18L8,18L7,21ZM12,21L14,21L15,18L13,18L12,21ZM17,21L19,21L20,18L18,18L17,21Z" />
+</vector>
