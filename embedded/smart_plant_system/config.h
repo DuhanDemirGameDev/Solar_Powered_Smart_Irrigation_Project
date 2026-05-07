@@ -10,15 +10,15 @@
 // ============================================================
 //  WiFi Configuration
 // ============================================================
-#define WIFI_SSID       "realme 8"
-#define WIFI_PASSWORD   "gdkuesy6"
+#define WIFI_SSID       "Duhan"
+#define WIFI_PASSWORD   "duhannnn"
 
 // ============================================================
 //  Backend Server Configuration
 // ============================================================
 // IMPORTANT: Replace 192.168.1.X with the IP address of the machine
 // running the Spring Boot backend on the same WiFi network as the ESP32.
-#define BACKEND_HOST    "192.168.1.X"
+#define BACKEND_HOST    "10.15.147.126"
 #define BACKEND_PORT    8081
 #define ENDPOINT_DATA   "/api/v1/sensors"
 #define ENDPOINT_CMD    "/api/v1/irrigation/command"
