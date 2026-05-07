@@ -4,8 +4,10 @@ import pickle
 import pandas as pd
 import requests
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(base_dir, "..", "model", "irrigation_model.pkl")

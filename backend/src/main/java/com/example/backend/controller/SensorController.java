@@ -27,12 +27,15 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class SensorController {
 
-    private static final String ALERT_EMAIL = "solarpower0606@gmail.com";
+    private static final String ALERT_EMAIL = "solarpowered0606@gmail.com";
     private static final String AI_PREDICT_URL = "http://127.0.0.1:5000/predict";
 
     private final SensorService sensorService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final RestTemplate restTemplate;
+
+    private long lastEmailSentTime = 0;
+    private static final long EMAIL_COOLDOWN_MS = 60000;
 
     public SensorController(
             SensorService sensorService,
@@ -51,8 +54,15 @@ public class SensorController {
     public ResponseEntity<SensorDataDto> createSensorData(@Valid @RequestBody SensorDataDto sensorDataDto) {
         SensorDataDto savedSensorData = sensorService.saveSensorData(sensorDataDto);
 
-        updateAiDecision(sensorDataDto);
-        sendPumpStartNotificationIfNeeded(sensorDataDto);
+        String aiDecision = updateAiDecision(sensorDataDto);
+        
+        boolean isManualStart = "start".equalsIgnoreCase(sensorDataDto.getPumpState()) 
+                             || "on".equalsIgnoreCase(sensorDataDto.getPumpState());
+        boolean isAiStart = "IRRIGATE".equalsIgnoreCase(aiDecision);
+
+        if (isManualStart || isAiStart) {
+            sendPumpStartNotificationIfNeeded();
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSensorData);
     }
@@ -85,7 +95,7 @@ public class SensorController {
         }
     }
 
-    private void updateAiDecision(SensorDataDto sensorDataDto) {
+    private String updateAiDecision(SensorDataDto sensorDataDto) {
         Map<String, Object> pythonRequest = Map.of(
                 "moisture", sensorDataDto.getMoisturePercent(),
                 "is_raining", sensorDataDto.getIsRaining()
@@ -105,11 +115,16 @@ public class SensorController {
         synchronized (IrrigationState.COMMAND_LOCK) {
             IrrigationState.lastDecision = decision;
         }
+        
+        System.out.println("AI Karari: " + decision);
+        return decision;
     }
 
-    private void sendPumpStartNotificationIfNeeded(SensorDataDto sensorDataDto) {
-        if (!"start".equalsIgnoreCase(sensorDataDto.getPumpState())
-                && !"on".equalsIgnoreCase(sensorDataDto.getPumpState())) {
+    private void sendPumpStartNotificationIfNeeded() {
+        long currentTime = System.currentTimeMillis();
+        
+        if (currentTime - lastEmailSentTime <= EMAIL_COOLDOWN_MS) {
+            System.out.println("Pompa calisiyor ama mail spamini onlemek icin beklemede kalindi.");
             return;
         }
 
@@ -122,11 +137,14 @@ public class SensorController {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(ALERT_EMAIL);
             message.setTo(ALERT_EMAIL);
-            message.setSubject("Smart Irrigation Notification");
-            message.setText("Pump will run for " + sensorDataDto.getPumpRemainingTime() + " seconds.");
+            message.setSubject("Akilli Sulama Bildirimi");
+            message.setText("Sistem acil durumu! Nem dustu veya manuel komut verildi. Pompa calistiriliyor.");
             mailSender.send(message);
+            
+            System.out.println("MAIL KUTUYA DUSTU!");
+            lastEmailSentTime = currentTime;
         } catch (Exception e) {
-            System.err.println("Mail error: " + e.getMessage());
+            System.err.println("Mail Hatasi: " + e.getMessage());
         }
     }
 }
