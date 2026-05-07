@@ -229,3 +229,22 @@ function escapeHtml(value) {
         .replaceAll("\"", "&quot;")
         .replaceAll("'", "&#039;");
 }
+
+document.getElementById("manualPumpBtn")?.addEventListener("click", async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/irrigation/set-command`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "start", duration: 5, reason: "MANUAL" }) 
+        });
+        
+        if (response.ok) {
+            alert("Manuel sulama komutu başarıyla gönderildi! 💧");
+            initializeDashboard(); 
+        } else {
+            alert("Komut gönderilirken bir hata oluştu.");
+        }
+    } catch (error) {
+        console.error("Manuel sulama hatası:", error);
+    }
+});
