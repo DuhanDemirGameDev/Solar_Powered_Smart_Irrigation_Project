@@ -1,6 +1,8 @@
 package com.example.smartirrigationmobile.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +26,24 @@ import retrofit2.Response;
 
 public class DashboardFragment extends Fragment {
 
+    private static final long POLL_INTERVAL_MS = 5000L;
+
     private TextView moistureValueText;
     private TextView rainStatusText;
     private TextView pumpStateText;
     private TextView lastUpdatedText;
     private Call<PageResponse<SensorData>> latestSensorCall;
+
+    private final Handler pollHandler = new Handler(Looper.getMainLooper());
+    private final Runnable pollRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isAdded()) {
+                fetchLatestSensorData();
+                pollHandler.postDelayed(this, POLL_INTERVAL_MS);
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -46,9 +61,13 @@ public class DashboardFragment extends Fragment {
         lastUpdatedText = view.findViewById(R.id.text_last_updated_value);
 
         fetchLatestSensorData();
+        pollHandler.postDelayed(pollRunnable, POLL_INTERVAL_MS);
     }
 
     private void fetchLatestSensorData() {
+        if (latestSensorCall != null) {
+            latestSensorCall.cancel();
+        }
         latestSensorCall = RetrofitClient.getApiService().getLatestSensorData();
         latestSensorCall.enqueue(new Callback<PageResponse<SensorData>>() {
             @Override
@@ -99,6 +118,7 @@ public class DashboardFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        pollHandler.removeCallbacks(pollRunnable);
         if (latestSensorCall != null) {
             latestSensorCall.cancel();
         }

@@ -38,6 +38,8 @@ const elements = {
 let moistureChart = null;
 let refreshTimer = null;
 let isRefreshing = false;
+let optimisticPumpState = null;
+let optimisticPumpStateExpiry = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
     elements.manualPumpBtn?.addEventListener("click", handleManualPumpClick);
@@ -195,7 +197,13 @@ function renderLatestStatus(sensorHistory) {
     }
 
     const moisture = readField(latest, "moisturePercent", "moisture_percent");
-    const pumpState = normalizePumpState(readField(latest, "pumpState", "pump_state"));
+    const rawPumpState = normalizePumpState(readField(latest, "pumpState", "pump_state"));
+    const pumpState = (optimisticPumpState && Date.now() < optimisticPumpStateExpiry)
+        ? optimisticPumpState
+        : rawPumpState;
+    if (rawPumpState !== "OFF" && rawPumpState !== "Unknown") {
+        optimisticPumpState = null;
+    }
     const isRaining = Boolean(readField(latest, "isRaining", "is_raining"));
     const rawMoisture = readField(latest, "moistureRaw", "moisture_raw");
 
@@ -377,6 +385,10 @@ async function handleManualPumpClick() {
             throw new Error(`Manual pump command failed with HTTP ${response.status}`);
         }
 
+        optimisticPumpState = "ON";
+        optimisticPumpStateExpiry = Date.now() + 15000;
+        updatePumpChip("ON");
+        elements.latestPumpState.textContent = "ON";
         showToast("Pump command queued", "Manual override sent for 15 seconds.", "success");
         await refreshDashboard();
     } catch (error) {
