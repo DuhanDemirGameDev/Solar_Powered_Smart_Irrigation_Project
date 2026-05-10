@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class IrrigationController {
 
     private static final int DEFAULT_IRRIGATION_DURATION_SECONDS = 15;
+    private static final Logger log = LoggerFactory.getLogger(IrrigationController.class);
 
     private final IrrigationService irrigationService;
 
@@ -53,6 +56,7 @@ public class IrrigationController {
 
             if ("IRRIGATE".equals(decision)) {
                 IrrigationState.lastDecision = "IDLE";
+                writeIrrigationLog("start", DEFAULT_IRRIGATION_DURATION_SECONDS);
                 return ResponseEntity.ok(buildCommandResponse(
                         "start",
                         DEFAULT_IRRIGATION_DURATION_SECONDS,
@@ -62,6 +66,7 @@ public class IrrigationController {
 
             if ("STOP".equals(decision)) {
                 IrrigationState.lastDecision = "IDLE";
+                writeIrrigationLog("stop", 0);
                 return ResponseEntity.ok(buildCommandResponse("stop", 0, "AI decision: STOP"));
             }
 
@@ -87,6 +92,8 @@ public class IrrigationController {
             IrrigationState.pendingReason = reason;
         }
 
+        writeIrrigationLog(action, durationSeconds);
+
         return ResponseEntity.ok(Map.of(
                 "queued", true,
                 "action", action,
@@ -103,6 +110,8 @@ public class IrrigationController {
             IrrigationState.pendingDuration = DEFAULT_IRRIGATION_DURATION_SECONDS;
             IrrigationState.pendingReason = "Manual irrigation endpoint";
         }
+
+        writeIrrigationLog("start", DEFAULT_IRRIGATION_DURATION_SECONDS);
 
         return ResponseEntity.ok(Map.of("message", "Manual irrigation command queued"));
     }
@@ -197,5 +206,21 @@ public class IrrigationController {
         }
 
         return "Manual override: " + action;
+    }
+
+    private void writeIrrigationLog(String action, int durationSeconds) {
+        try {
+            String pumpStatus = "start".equals(action) ? "ON" : "OFF";
+            int durationMinutes = "start".equals(action)
+                    ? Math.max(1, (int) Math.ceil(durationSeconds / 60.0))
+                    : 0;
+            irrigationService.logPumpAction(IrrigationLogDto.builder()
+                    .pumpStatus(pumpStatus)
+                    .durationInMinutes(durationMinutes)
+                    .timestamp(LocalDateTime.now())
+                    .build());
+        } catch (Exception e) {
+            log.error("Failed to write irrigation log: {}", e.getMessage());
+        }
     }
 }
