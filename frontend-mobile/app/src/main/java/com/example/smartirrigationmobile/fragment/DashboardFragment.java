@@ -11,11 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartirrigationmobile.R;
 import com.example.smartirrigationmobile.model.PageResponse;
 import com.example.smartirrigationmobile.model.SensorData;
 import com.example.smartirrigationmobile.network.RetrofitClient;
+import com.example.smartirrigationmobile.viewmodel.PumpViewModel;
 
 import java.util.List;
 import java.util.Locale;
@@ -26,13 +28,14 @@ import retrofit2.Response;
 
 public class DashboardFragment extends Fragment {
 
-    private static final long POLL_INTERVAL_MS = 5000L;
+    private static final long POLL_INTERVAL_MS = 15000L;
 
     private TextView moistureValueText;
     private TextView rainStatusText;
     private TextView pumpStateText;
     private TextView lastUpdatedText;
     private Call<PageResponse<SensorData>> latestSensorCall;
+    private PumpViewModel pumpViewModel;
 
     private final Handler pollHandler = new Handler(Looper.getMainLooper());
     private final Runnable pollRunnable = new Runnable() {
@@ -59,6 +62,13 @@ public class DashboardFragment extends Fragment {
         rainStatusText = view.findViewById(R.id.text_rain_status_value);
         pumpStateText = view.findViewById(R.id.text_pump_state_value);
         lastUpdatedText = view.findViewById(R.id.text_last_updated_value);
+
+        pumpViewModel = new ViewModelProvider(requireActivity()).get(PumpViewModel.class);
+        pumpViewModel.getOptimisticPumpState().observe(getViewLifecycleOwner(), optimisticState -> {
+            if (pumpViewModel.isOptimisticActive()) {
+                pumpStateText.setText(optimisticState);
+            }
+        });
 
         fetchLatestSensorData();
         pollHandler.postDelayed(pollRunnable, POLL_INTERVAL_MS);
@@ -105,8 +115,27 @@ public class DashboardFragment extends Fragment {
                 ? "--%"
                 : String.format(Locale.getDefault(), "%.1f%%", moisturePercent));
         rainStatusText.setText(Boolean.TRUE.equals(isRaining) ? "Raining" : "No Rain");
-        pumpStateText.setText(sensorData.getPumpState() == null ? "Unknown" : sensorData.getPumpState());
+
+        String normalizedState = normalizePumpState(sensorData.getPumpState());
+        if (pumpViewModel.isOptimisticActive()) {
+            if ("ON".equals(normalizedState)) {
+                pumpViewModel.clearOptimisticState();
+                pumpStateText.setText(normalizedState);
+            }
+        } else {
+            pumpStateText.setText(normalizedState);
+        }
+
         lastUpdatedText.setText(sensorData.getTimestamp() == null ? "No timestamp" : sensorData.getTimestamp());
+    }
+
+    private String normalizePumpState(String raw) {
+        if (raw == null) return "Unknown";
+        switch (raw.toUpperCase()) {
+            case "RUNNING": return "ON";
+            case "IDLE":    return "OFF";
+            default:        return raw;
+        }
     }
 
     private void showUnavailableState() {

@@ -3,7 +3,7 @@ const SENSOR_HISTORY_URL = `${API_BASE_URL}/api/v1/sensors/history?page=0&size=2
 const IRRIGATION_HISTORY_URL = `${API_BASE_URL}/api/v1/irrigation/history?page=0&size=20`;
 const MANUAL_PUMP_URL = `${API_BASE_URL}/api/v1/irrigation/set-command`;
 const AI_PREDICT_URL = "http://127.0.0.1:5000/predict";
-const POLL_INTERVAL_MS = 10000;
+const POLL_INTERVAL_MS = 5000;
 const AI_REQUEST_TIMEOUT_MS = 4500;
 
 const elements = {
