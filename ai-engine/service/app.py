@@ -51,8 +51,9 @@ def predict():
         response.raise_for_status()
         data = response.json()
         first = data["list"][0]
+        next_3h = data["list"][:2]  # önümüzdeki 3 saat (3'er saatlik 2 dilim)
 
-        rain_prob = first["pop"] * 100
+        rain_prob = max(item["pop"] for item in next_3h) * 100
         temperature = first["main"]["temp"]
         humidity = first["main"]["humidity"]
 
