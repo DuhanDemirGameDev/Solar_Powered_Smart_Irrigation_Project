@@ -121,7 +121,7 @@ public class WeatherFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<AiPredictionResponse> call, @NonNull Throwable t) {
                 if (!call.isCanceled() && isAdded()) {
-                    showUnavailableState("Start Flask API on 10.0.2.2:5000");
+                    showUnavailableState("Start Flask API on 10.33.37.126:5000");
                 }
             }
         });

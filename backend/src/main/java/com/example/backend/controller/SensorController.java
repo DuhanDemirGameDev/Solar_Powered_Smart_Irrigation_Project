@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min;
 import java.time.Duration;
 import java.util.Map;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -28,11 +29,11 @@ import org.springframework.web.client.RestTemplate;
 public class SensorController {
 
     private static final String ALERT_EMAIL = "solarpowered0606@gmail.com";
-    private static final String AI_PREDICT_URL = "http://127.0.0.1:5000/predict";
 
     private final SensorService sensorService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final RestTemplate restTemplate;
+    private final String aiPredictUrl;
 
     private long lastEmailSentTime = 0;
     private static final long EMAIL_COOLDOWN_MS = 60000;
@@ -40,10 +41,12 @@ public class SensorController {
     public SensorController(
             SensorService sensorService,
             ObjectProvider<JavaMailSender> mailSenderProvider,
-            RestTemplateBuilder restTemplateBuilder
+            RestTemplateBuilder restTemplateBuilder,
+            @Value("${ai.predict-url:http://127.0.0.1:5000/predict}") String aiPredictUrl
     ) {
         this.sensorService = sensorService;
         this.mailSenderProvider = mailSenderProvider;
+        this.aiPredictUrl = aiPredictUrl;
         this.restTemplate = restTemplateBuilder
                 .connectTimeout(Duration.ofSeconds(2))
                 .readTimeout(Duration.ofSeconds(3))
@@ -98,18 +101,19 @@ public class SensorController {
     private String updateAiDecision(SensorDataDto sensorDataDto) {
         Map<String, Object> pythonRequest = Map.of(
                 "moisture", sensorDataDto.getMoisturePercent(),
-                "is_raining", sensorDataDto.getIsRaining()
+                "is_raining", Boolean.TRUE.equals(sensorDataDto.getIsRaining())
         );
 
         String decision = "AI_SERVICE_UNAVAILABLE";
 
         try {
-            Map<?, ?> response = restTemplate.postForObject(AI_PREDICT_URL, pythonRequest, Map.class);
+            Map<?, ?> response = restTemplate.postForObject(aiPredictUrl, pythonRequest, Map.class);
             if (response != null && response.get("decision") != null) {
                 decision = response.get("decision").toString();
             }
         } catch (RestClientException ex) {
             decision = "AI_SERVICE_UNAVAILABLE";
+            System.err.println("Flask AI request failed at " + aiPredictUrl + ": " + ex.getMessage());
         }
 
         synchronized (IrrigationState.COMMAND_LOCK) {

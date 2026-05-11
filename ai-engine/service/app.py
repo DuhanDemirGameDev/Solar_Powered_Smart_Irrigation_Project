@@ -51,8 +51,9 @@ def predict():
         response.raise_for_status()
         data = response.json()
         first = data["list"][0]
+        next_3h= data["list"][:2]  # Get the next 3 hours of forecast data
 
-        rain_prob = first["pop"] * 100
+        rain_prob = max(item["pop"] for item in next_3h) * 100
         temperature = first["main"]["temp"]
         humidity = first["main"]["humidity"]
 
@@ -92,4 +93,6 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    flask_host = os.getenv("FLASK_HOST", "0.0.0.0")
+    flask_port = int(os.getenv("FLASK_PORT", "5000"))
+    app.run(host=flask_host, port=flask_port, debug=True)

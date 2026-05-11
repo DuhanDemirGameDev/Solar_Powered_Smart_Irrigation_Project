@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class AiRetrofitClient {
 
-    private static final String AI_BASE_URL = "http://10.0.2.2:5000/";
+    private static final String AI_BASE_URL = "http://10.33.37.126:5000/";
     private static volatile Retrofit retrofit;
 
     private AiRetrofitClient() {
