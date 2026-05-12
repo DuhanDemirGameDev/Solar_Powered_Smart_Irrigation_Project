@@ -2,7 +2,7 @@ const API_BASE_URL = "http://localhost:8081";
 const SENSOR_HISTORY_URL = `${API_BASE_URL}/api/v1/sensors/history?page=0&size=20`;
 const IRRIGATION_HISTORY_URL = `${API_BASE_URL}/api/v1/irrigation/history?page=0&size=20`;
 const MANUAL_PUMP_URL = `${API_BASE_URL}/api/v1/irrigation/set-command`;
-const AI_PREDICT_URL = "http://127.0.0.1:5000/predict";
+const AI_PREDICT_URL = "http://10.33.37.126:5000/predict";
 const POLL_INTERVAL_MS = 5000;
 const AI_REQUEST_TIMEOUT_MS = 4500;
 
@@ -163,7 +163,7 @@ function renderWeatherFallback() {
     elements.weatherTemperature.textContent = "--";
     elements.weatherHumidity.textContent = "--";
     elements.weatherRainProb.textContent = "--";
-    elements.aiDecisionCopy.textContent = "Prediction service is unavailable. Start the Flask API on 127.0.0.1:5000 to restore AI guidance.";
+    elements.aiDecisionCopy.textContent = "Prediction service is unavailable. Start the Flask API on 10.33.37.126:5000 to restore AI guidance.";
 }
 
 async function fetchPageContent(url) {
